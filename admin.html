@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — Pet Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --coral:    #FF6B6B;
+      --mint:     #4ECDC4;
+      --yellow:   #FFE66D;
+      --charcoal: #2C3E50;
+      --bg:       #F7F8FA;
+      --white:    #ffffff;
+      --border:   #E2E8F0;
+      --purple:   #A78BFA;
+      --green:    #4ade80;
+      --red:      #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--charcoal);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FF6B6B, #FF9A8B, #FFE66D);
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .login-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+
+    .login-box h2 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 0.3rem;
+      color: var(--charcoal);
+    }
+
+    .login-box p {
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 1.8rem;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border 0.2s;
+      text-align: center;
+      letter-spacing: 3px;
+    }
+
+    .login-input:focus { border-color: var(--coral); }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--coral), #ff9a8b);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+    }
+
+    .login-btn:hover { transform: translateY(-2px); }
+    .login-btn:active { transform: scale(0.98); }
+
+    .login-error {
+      color: var(--red);
+      font-size: 0.82rem;
+      margin-top: 0.7rem;
+      display: none;
+      font-weight: 600;
+    }
+
+    /* ── ADMIN PANEL ── */
+    #admin-panel { display: none; }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .topbar-left {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .topbar-right { display: flex; gap: 0.7rem; }
+
+    .btn-preview {
+      background: var(--charcoal);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-preview:hover { background: #3d5166; }
+
+    .btn-logout {
+      background: transparent;
+      color: #999;
+      border: 1.5px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { color: var(--red); border-color: var(--red); }
+
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 0 1.2rem 4rem;
+    }
+
+    /* Section cards */
+    .section-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 1.6rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1.5px solid var(--border);
+    }
+
+    .section-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--charcoal);
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title span {
+      font-size: 1.2rem;
+    }
+
+    /* Form fields */
+    .field { margin-bottom: 1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.4rem;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--charcoal);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      background: #FAFAFA;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: var(--coral);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
+    }
+
+    .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    /* Vaccine rows */
+    .vax-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .vax-row input, .vax-row select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+      background: #FAFAFA;
+    }
+
+    .vax-row input:focus, .vax-row select:focus {
+      border-color: var(--purple);
+      background: #fff;
+    }
+
+    .vax-del {
+      background: #FEE2E2;
+      color: var(--red);
+      border: none;
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .vax-del:hover { background: var(--red); color: #fff; }
+
+    .add-vax-btn {
+      background: #F3F0FF;
+      color: var(--purple);
+      border: 2px dashed var(--purple);
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.4rem;
+    }
+
+    .add-vax-btn:hover { background: var(--purple); color: #fff; }
+
+    /* Tags */
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .tag-chip {
+      background: #F0FFF4;
+      border: 2px solid var(--green);
+      color: #166534;
+      padding: 0.35rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tag-chip button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #166534;
+      font-size: 0.85rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .tag-add-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tag-add-row input {
+      flex: 1;
+      padding: 0.6rem 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .tag-add-row input:focus { border-color: var(--green); }
+
+    .tag-add-btn {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Save button */
+    .save-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--coral), #ff9a8b);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+      box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+      letter-spacing: 0.3px;
+    }
+
+    .save-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(255,107,107,0.45); }
+    .save-btn:active { transform: scale(0.98); }
+
+    .save-btn.saved {
+      background: linear-gradient(135deg, var(--green), #22c55e);
+      box-shadow: 0 6px 20px rgba(74,222,128,0.4);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--charcoal);
+      color: #fff;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h2>Admin Panel</h2>
+    <p>Enter password to edit pet profile</p>
+    <input class="login-input" type="password" id="pwd-input" placeholder="••••••••" maxlength="20"/>
+    <button class="login-btn" onclick="doLogin()">Unlock Panel</button>
+    <div class="login-error" id="login-error">❌ Wrong password! Try again.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN PANEL ── -->
+<div id="admin-panel">
+
+  <div class="topbar">
+    <div class="topbar-left">🐾 <span>Pet Profile Admin</span></div>
+    <div class="topbar-right">
+      <a class="btn-preview" href="index.html" target="_blank">👁 Preview Page</a>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Pet Info -->
+    <div class="section-card">
+      <div class="section-title"><span>🐶</span> Pet Information</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Pet Name</label>
+          <input type="text" id="petName" placeholder="e.g. Bruno"/>
+        </div>
+        <div class="field">
+          <label>Breed</label>
+          <input type="text" id="petBreed" placeholder="e.g. Golden Retriever"/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Age</label>
+          <input type="text" id="petAge" placeholder="e.g. 3 yrs"/>
+        </div>
+        <div class="field">
+          <label>Pet Photo URL</label>
+          <input type="url" id="petPhoto" placeholder="https://..."/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Owner Info -->
+    <div class="section-card">
+      <div class="section-title"><span>👤</span> Owner Information</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Owner Name</label>
+          <input type="text" id="ownerName" placeholder="e.g. Rahul Sharma"/>
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="tel" id="ownerPhone" placeholder="e.g. 9876543210"/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Locality</label>
+          <input type="text" id="locality" placeholder="e.g. Sector 15, Noida"/>
+        </div>
+        <div class="field">
+          <label>Pincode</label>
+          <input type="text" id="pincode" placeholder="e.g. 201301"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personality Tags -->
+    <div class="section-card">
+      <div class="section-title"><span>🏷️</span> Personality Tags</div>
+      <div class="tags-wrap" id="tags-wrap"></div>
+      <div class="tag-add-row">
+        <input type="text" id="tag-input" placeholder="e.g. 🤝 Friendly" maxlength="25"/>
+        <button class="tag-add-btn" onclick="addTag()">+ Add</button>
+      </div>
+    </div>
+
+    <!-- Vaccinations -->
+    <div class="section-card">
+      <div class="section-title"><span>💉</span> Vaccination Records</div>
+      <div id="vax-list"></div>
+      <button class="add-vax-btn" onclick="addVax()">+ Add Vaccine</button>
+    </div>
+
+    <!-- Emergency Message -->
+    <div class="section-card">
+      <div class="section-title"><span>🚨</span> Emergency Message</div>
+      <div class="field">
+        <label>Message (shown when tag is scanned)</label>
+        <textarea id="emergencyMsg" placeholder="If you found my pet, please call..."></textarea>
+      </div>
+    </div>
+
+    <!-- Save -->
+    <button class="save-btn" id="save-btn" onclick="saveData()">💾 Save & Update Profile</button>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── PASSWORD ── Change this!
+  const ADMIN_PASSWORD = "pet1234";
+
+  // ── LOGIN ──
+  function doLogin() {
+    const val = document.getElementById('pwd-input').value;
+    if (val === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      loadData();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('pwd-input').value = '';
+    }
+  }
+
+  document.getElementById('pwd-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('pwd-input').value = '';
+  }
+
+  // ── TAGS ──
+  let tags = [];
+
+  function renderTags() {
+    const wrap = document.getElementById('tags-wrap');
+    wrap.innerHTML = tags.map((t, i) => `
+      <div class="tag-chip">
+        ${t}
+        <button onclick="removeTag(${i})">✕</button>
+      </div>`).join('');
+  }
+
+  function addTag() {
+    const inp = document.getElementById('tag-input');
+    const val = inp.value.trim();
+    if (val && tags.length < 8) {
+      tags.push(val);
+      renderTags();
+      inp.value = '';
+    }
+  }
+
+  function removeTag(i) {
+    tags.splice(i, 1);
+    renderTags();
+  }
+
+  document.getElementById('tag-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTag();
+  });
+
+  // ── VACCINES ──
+  let vaccines = [];
+
+  function renderVax() {
+    const list = document.getElementById('vax-list');
+    list.innerHTML = vaccines.map((v, i) => `
+      <div class="vax-row">
+        <input type="text" value="${v.name}" placeholder="Vaccine name"
+          oninput="vaccines[${i}].name = this.value"/>
+        <input type="text" value="${v.date}" placeholder="e.g. Jan 2024"
+          oninput="vaccines[${i}].date = this.value"/>
+        <select onchange="vaccines[${i}].status = this.value">
+          <option value="done" ${v.status==='done'?'selected':''}>✅ Done</option>
+          <option value="due"  ${v.status==='due' ?'selected':''}>⏳ Due</option>
+        </select>
+        <button class="vax-del" onclick="removeVax(${i})">🗑</button>
+      </div>`).join('');
+  }
+
+  function addVax() {
+    vaccines.push({ name: '', date: '', status: 'done' });
+    renderVax();
+  }
+
+  function removeVax(i) {
+    vaccines.splice(i, 1);
+    renderVax();
+  }
+
+  // ── SAVE DATA ──
+  function saveData() {
+    const data = {
+      petName:      document.getElementById('petName').value.trim(),
+      petBreed:     document.getElementById('petBreed').value.trim(),
+      petAge:       document.getElementById('petAge').value.trim(),
+      petPhoto:     document.getElementById('petPhoto').value.trim(),
+      ownerName:    document.getElementById('ownerName').value.trim(),
+      ownerPhone:   document.getElementById('ownerPhone').value.trim(),
+      locality:     document.getElementById('locality').value.trim(),
+      pincode:      document.getElementById('pincode').value.trim(),
+      emergencyMsg: document.getElementById('emergencyMsg').value.trim(),
+      tags,
+      vaccines,
+    };
+
+    localStorage.setItem('petProfileData', JSON.stringify(data));
+
+    const btn = document.getElementById('save-btn');
+    btn.textContent = '✅ Saved Successfully!';
+    btn.classList.add('saved');
+    setTimeout(() => {
+      btn.textContent = '💾 Save & Update Profile';
+      btn.classList.remove('saved');
+    }, 2500);
+
+    showToast('🎉 Profile updated! Open index.html to see changes.');
+  }
+
+  // ── LOAD DATA ──
+  function loadData() {
+    const raw = localStorage.getItem('petProfileData');
+    if (!raw) {
+      // Default sample data
+      tags = ['🤝 Super Friendly', '💉 Vaccinated', '🍖 Treat Lover'];
+      vaccines = [
+        { name: 'Rabies', date: 'Jan 2024', status: 'done' },
+        { name: 'DHPPi', date: 'Mar 2024', status: 'done' },
+        { name: 'Bordetella', date: 'Jul 2025', status: 'due' },
+      ];
+      renderTags(); renderVax();
+      return;
+    }
+
+    const d = JSON.parse(raw);
+    document.getElementById('petName').value     = d.petName     || '';
+    document.getElementById('petBreed').value    = d.petBreed    || '';
+    document.getElementById('petAge').value      = d.petAge      || '';
+    document.getElementById('petPhoto').value    = d.petPhoto    || '';
+    document.getElementById('ownerName').value   = d.ownerName   || '';
+    document.getElementById('ownerPhone').value  = d.ownerPhone  || '';
+    document.getElementById('locality').value    = d.locality    || '';
+    document.getElementById('pincode').value     = d.pincode     || '';
+    document.getElementById('emergencyMsg').value= d.emergencyMsg|| '';
+    tags     = d.tags     || [];
+    vaccines = d.vaccines || [];
+    renderTags();
+    renderVax();
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+
+</body>
+</html>
