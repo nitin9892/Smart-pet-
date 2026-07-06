@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --coral:    #FF6B6B;
       --mint:     #4ECDC4;
@@ -20,402 +19,93 @@
       --green:    #4ade80;
       --red:      #f87171;
     }
+    body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--charcoal); min-height: 100vh; }
 
-    body {
-      background: var(--bg);
-      font-family: 'Inter', sans-serif;
-      color: var(--charcoal);
-      min-height: 100vh;
-    }
+    /* LOGIN */
+    #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#FF6B6B,#FF9A8B,#FFE66D); }
+    .login-box { background:#fff; border-radius:24px; padding:2.5rem 2rem; width:90%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align:center; }
+    .login-icon { font-size:3rem; margin-bottom:0.8rem; }
+    .login-box h2 { font-family:'Nunito',sans-serif; font-size:1.6rem; font-weight:900; margin-bottom:0.3rem; color:var(--charcoal); }
+    .login-box p { font-size:0.85rem; color:#999; margin-bottom:1.8rem; }
+    .login-input { width:100%; padding:0.85rem 1rem; border:2px solid var(--border); border-radius:12px; font-size:1rem; font-family:'Inter',sans-serif; margin-bottom:1rem; outline:none; transition:border 0.2s; text-align:center; letter-spacing:3px; }
+    .login-input:focus { border-color:var(--coral); }
+    .login-btn { width:100%; padding:0.9rem; background:linear-gradient(135deg,var(--coral),#ff9a8b); color:#fff; border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 15px rgba(255,107,107,0.4); }
+    .login-btn:hover { transform:translateY(-2px); }
+    .login-btn:active { transform:scale(0.98); }
+    .login-error { color:var(--red); font-size:0.82rem; margin-top:0.7rem; display:none; font-weight:600; }
 
-    /* ── LOGIN SCREEN ── */
-    #login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #FF6B6B, #FF9A8B, #FFE66D);
-    }
+    /* ADMIN PANEL */
+    #admin-panel { display:none; }
+    .topbar { background:var(--white); border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .topbar-left { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem; }
+    .topbar-right { display:flex; gap:0.7rem; }
+    .btn-preview { background:var(--charcoal); color:#fff; border:none; padding:0.5rem 1.1rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; }
+    .btn-preview:hover { background:#3d5166; }
+    .btn-logout { background:transparent; color:#999; border:1.5px solid var(--border); padding:0.5rem 1rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+    .btn-logout:hover { color:var(--red); border-color:var(--red); }
 
-    .login-box {
-      background: #fff;
-      border-radius: 24px;
-      padding: 2.5rem 2rem;
-      width: 90%;
-      max-width: 380px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      text-align: center;
-    }
+    .container { max-width:700px; margin:2rem auto; padding:0 1.2rem 4rem; }
 
-    .login-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+    .section-card { background:var(--white); border-radius:20px; padding:1.6rem; margin-bottom:1.2rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1.5px solid var(--border); }
+    .section-title { font-family:'Nunito',sans-serif; font-size:1rem; font-weight:900; color:var(--charcoal); margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5rem; }
+    .section-title span { font-size:1.2rem; }
 
-    .login-box h2 {
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 900;
-      margin-bottom: 0.3rem;
-      color: var(--charcoal);
-    }
+    .field { margin-bottom:1rem; }
+    .field label { display:block; font-size:0.78rem; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.4rem; }
+    .field input, .field textarea, .field select { width:100%; padding:0.75rem 1rem; border:2px solid var(--border); border-radius:12px; font-size:0.95rem; font-family:'Inter',sans-serif; color:var(--charcoal); outline:none; transition:border 0.2s,box-shadow 0.2s; background:#FAFAFA; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color:var(--coral); background:#fff; box-shadow:0 0 0 3px rgba(255,107,107,0.1); }
+    .field textarea { resize:vertical; min-height:90px; line-height:1.5; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    @media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
 
-    .login-box p {
-      font-size: 0.85rem;
-      color: #999;
-      margin-bottom: 1.8rem;
-    }
+    /* IMAGE UPLOAD */
+    .img-upload-wrap { position:relative; }
+    .img-upload-btn { width:100%; padding:0.75rem 1rem; border:2px dashed var(--border); border-radius:12px; font-size:0.95rem; font-family:'Inter',sans-serif; color:#888; background:#FAFAFA; cursor:pointer; text-align:center; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+    .img-upload-btn:hover { border-color:var(--coral); color:var(--coral); background:#fff5f5; }
+    .img-upload-btn.uploading { border-color:var(--purple); color:var(--purple); }
+    .img-upload-btn.done { border-color:var(--green); color:#166534; background:#f0fff4; border-style:solid; }
+    #petPhotoInput { display:none; }
+    .img-preview { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--coral); margin-top:0.7rem; display:none; }
 
-    .login-input {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      margin-bottom: 1rem;
-      outline: none;
-      transition: border 0.2s;
-      text-align: center;
-      letter-spacing: 3px;
-    }
+    /* VACCINE ROWS */
+    .vax-row { display:grid; grid-template-columns:1fr 1fr auto auto; gap:0.6rem; align-items:center; margin-bottom:0.6rem; }
+    .vax-row input, .vax-row select { width:100%; padding:0.6rem 0.8rem; border:2px solid var(--border); border-radius:10px; font-size:0.88rem; font-family:'Inter',sans-serif; outline:none; transition:border 0.2s; background:#FAFAFA; }
+    .vax-row input:focus, .vax-row select:focus { border-color:var(--purple); background:#fff; }
+    .vax-del { background:#FEE2E2; color:var(--red); border:none; width:34px; height:34px; border-radius:8px; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+    .vax-del:hover { background:var(--red); color:#fff; }
+    .add-vax-btn { background:#F3F0FF; color:var(--purple); border:2px dashed var(--purple); width:100%; padding:0.65rem; border-radius:10px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; margin-top:0.4rem; }
+    .add-vax-btn:hover { background:var(--purple); color:#fff; }
 
-    .login-input:focus { border-color: var(--coral); }
+    /* TAGS */
+    .tags-wrap { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem; }
+    .tag-chip { background:#F0FFF4; border:2px solid var(--green); color:#166534; padding:0.35rem 0.8rem; border-radius:50px; font-size:0.82rem; font-weight:600; display:flex; align-items:center; gap:0.4rem; }
+    .tag-chip button { background:none; border:none; cursor:pointer; color:#166534; font-size:0.85rem; padding:0; line-height:1; }
+    .tag-add-row { display:flex; gap:0.5rem; }
+    .tag-add-row input { flex:1; padding:0.6rem 0.9rem; border:2px solid var(--border); border-radius:10px; font-size:0.88rem; font-family:'Inter',sans-serif; outline:none; transition:border 0.2s; }
+    .tag-add-row input:focus { border-color:var(--green); }
+    .tag-add-btn { background:var(--green); color:#fff; border:none; padding:0.6rem 1rem; border-radius:10px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; white-space:nowrap; }
 
-    .login-btn {
-      width: 100%;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, var(--coral), #ff9a8b);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 15px rgba(255,107,107,0.4);
-    }
+    /* SAVE BUTTON */
+    .save-btn { width:100%; padding:1rem; background:linear-gradient(135deg,var(--coral),#ff9a8b); color:#fff; border:none; border-radius:16px; font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:900; cursor:pointer; transition:all 0.2s cubic-bezier(.34,1.56,.64,1); box-shadow:0 6px 20px rgba(255,107,107,0.4); }
+    .save-btn:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(255,107,107,0.45); }
+    .save-btn:active { transform:scale(0.98); }
+    .save-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .save-btn.saved { background:linear-gradient(135deg,var(--green),#22c55e); box-shadow:0 6px 20px rgba(74,222,128,0.4); }
 
-    .login-btn:hover { transform: translateY(-2px); }
-    .login-btn:active { transform: scale(0.98); }
+    /* TOAST */
+    .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px); background:var(--charcoal); color:#fff; padding:0.8rem 1.5rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.9rem; z-index:999; transition:transform 0.35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+    .toast.error { background:#dc2626; }
 
-    .login-error {
-      color: var(--red);
-      font-size: 0.82rem;
-      margin-top: 0.7rem;
-      display: none;
-      font-weight: 600;
-    }
-
-    /* ── ADMIN PANEL ── */
-    #admin-panel { display: none; }
-
-    .topbar {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .topbar-left {
-      font-family: 'Nunito', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .topbar-right { display: flex; gap: 0.7rem; }
-
-    .btn-preview {
-      background: var(--charcoal);
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1.1rem;
-      border-radius: 50px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .btn-preview:hover { background: #3d5166; }
-
-    .btn-logout {
-      background: transparent;
-      color: #999;
-      border: 1.5px solid var(--border);
-      padding: 0.5rem 1rem;
-      border-radius: 50px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-logout:hover { color: var(--red); border-color: var(--red); }
-
-    .container {
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 0 1.2rem 4rem;
-    }
-
-    /* Section cards */
-    .section-card {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 1.6rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      border: 1.5px solid var(--border);
-    }
-
-    .section-title {
-      font-family: 'Nunito', sans-serif;
-      font-size: 1rem;
-      font-weight: 900;
-      color: var(--charcoal);
-      margin-bottom: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .section-title span {
-      font-size: 1.2rem;
-    }
-
-    /* Form fields */
-    .field { margin-bottom: 1rem; }
-
-    .field label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.4rem;
-    }
-
-    .field input,
-    .field textarea,
-    .field select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-family: 'Inter', sans-serif;
-      color: var(--charcoal);
-      outline: none;
-      transition: border 0.2s, box-shadow 0.2s;
-      background: #FAFAFA;
-    }
-
-    .field input:focus,
-    .field textarea:focus,
-    .field select:focus {
-      border-color: var(--coral);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
-    }
-
-    .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
-    }
-
-    @media (max-width: 480px) {
-      .field-row { grid-template-columns: 1fr; }
-    }
-
-    /* Vaccine rows */
-    .vax-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto auto;
-      gap: 0.6rem;
-      align-items: center;
-      margin-bottom: 0.6rem;
-    }
-
-    .vax-row input, .vax-row select {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: border 0.2s;
-      background: #FAFAFA;
-    }
-
-    .vax-row input:focus, .vax-row select:focus {
-      border-color: var(--purple);
-      background: #fff;
-    }
-
-    .vax-del {
-      background: #FEE2E2;
-      color: var(--red);
-      border: none;
-      width: 34px; height: 34px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    .vax-del:hover { background: var(--red); color: #fff; }
-
-    .add-vax-btn {
-      background: #F3F0FF;
-      color: var(--purple);
-      border: 2px dashed var(--purple);
-      width: 100%;
-      padding: 0.65rem;
-      border-radius: 10px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 0.4rem;
-    }
-
-    .add-vax-btn:hover { background: var(--purple); color: #fff; }
-
-    /* Tags */
-    .tags-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .tag-chip {
-      background: #F0FFF4;
-      border: 2px solid var(--green);
-      color: #166534;
-      padding: 0.35rem 0.8rem;
-      border-radius: 50px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .tag-chip button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #166534;
-      font-size: 0.85rem;
-      padding: 0;
-      line-height: 1;
-    }
-
-    .tag-add-row {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .tag-add-row input {
-      flex: 1;
-      padding: 0.6rem 0.9rem;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    .tag-add-row input:focus { border-color: var(--green); }
-
-    .tag-add-btn {
-      background: var(--green);
-      color: #fff;
-      border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 10px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    /* Save button */
-    .save-btn {
-      width: 100%;
-      padding: 1rem;
-      background: linear-gradient(135deg, var(--coral), #ff9a8b);
-      color: #fff;
-      border: none;
-      border-radius: 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 900;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
-      box-shadow: 0 6px 20px rgba(255,107,107,0.4);
-      letter-spacing: 0.3px;
-    }
-
-    .save-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(255,107,107,0.45); }
-    .save-btn:active { transform: scale(0.98); }
-
-    .save-btn.saved {
-      background: linear-gradient(135deg, var(--green), #22c55e);
-      box-shadow: 0 6px 20px rgba(74,222,128,0.4);
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--charcoal);
-      color: #fff;
-      padding: 0.8rem 1.5rem;
-      border-radius: 50px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      z-index: 999;
-      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap;
-    }
-
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    /* DB STATUS */
+    .db-status { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; padding:0.25rem 0.7rem; border-radius:50px; }
+    .db-status.connected { background:#f0fff4; color:#166534; }
+    .db-status.error { background:#FEE2E2; color:#dc2626; }
   </style>
 </head>
 <body>
 
-<!-- ── LOGIN ── -->
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-icon">🔐</div>
@@ -427,11 +117,12 @@
   </div>
 </div>
 
-<!-- ── ADMIN PANEL ── -->
+<!-- ADMIN PANEL -->
 <div id="admin-panel">
-
   <div class="topbar">
-    <div class="topbar-left">🐾 <span>Pet Profile Admin</span></div>
+    <div class="topbar-left">🐾 <span>Pet Profile Admin</span>
+      <span class="db-status connected" id="db-status">● Supabase</span>
+    </div>
     <div class="topbar-right">
       <a class="btn-preview" href="index.html" target="_blank">👁 Preview Page</a>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
@@ -449,7 +140,7 @@
           <input type="text" id="petName" placeholder="e.g. Bruno"/>
         </div>
         <div class="field">
-          <label>Breed</label>
+          <label>Breed / Category</label>
           <input type="text" id="petBreed" placeholder="e.g. Golden Retriever"/>
         </div>
       </div>
@@ -459,8 +150,26 @@
           <input type="text" id="petAge" placeholder="e.g. 3 yrs"/>
         </div>
         <div class="field">
-          <label>Pet Photo URL</label>
-          <input type="url" id="petPhoto" placeholder="https://..."/>
+          <label>Gender</label>
+          <select id="petGender">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="petDescription" placeholder="Brief description about your pet..."></textarea>
+      </div>
+      <div class="field">
+        <label>Pet Photo</label>
+        <div class="img-upload-wrap">
+          <div class="img-upload-btn" id="upload-btn-label" onclick="document.getElementById('petPhotoInput').click()">
+            📷 Click to upload pet photo
+          </div>
+          <input type="file" id="petPhotoInput" accept="image/*" onchange="handleImageUpload(this)"/>
+          <img id="img-preview" class="img-preview" src="" alt="Preview"/>
         </div>
       </div>
     </div>
@@ -525,15 +234,38 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── PASSWORD ── Change this!
-  const ADMIN_PASSWORD = "pet1234";
+  // ══════════════════════════════════════
+  // SUPABASE CONFIG
+  // ══════════════════════════════════════
+  const SUPABASE_URL    = 'https://qxzxzuyrzuqwgdunzlek.supabase.co';
+  const SUPABASE_KEY    = 'sb_publishable_7zMmBkBrorOIc5ans0vwcQ__IpBgU2C';
+  const TABLE           = 'pets';
+  const BUCKET          = 'pet-images';
+  const ADMIN_PASSWORD  = 'pet1234'; // Change this!
 
-  // ── LOGIN ──
+  const API  = `${SUPABASE_URL}/rest/v1`;
+  const STOR = `${SUPABASE_URL}/storage/v1`;
+
+  const HEADERS = {
+    'apikey':        SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type':  'application/json',
+    'Prefer':        'return=representation',
+  };
+
+  let currentPetId  = null;
+  let uploadedImgUrl = null;
+  let tags           = [];
+  let vaccines       = [];
+
+  // ══════════════════════════════════════
+  // LOGIN
+  // ══════════════════════════════════════
   function doLogin() {
     const val = document.getElementById('pwd-input').value;
     if (val === ADMIN_PASSWORD) {
       document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('admin-panel').style.display  = 'block';
       loadData();
     } else {
       document.getElementById('login-error').style.display = 'block';
@@ -547,18 +279,67 @@
 
   function doLogout() {
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-panel').style.display  = 'none';
     document.getElementById('pwd-input').value = '';
   }
 
-  // ── TAGS ──
-  let tags = [];
+  // ══════════════════════════════════════
+  // IMAGE UPLOAD → Supabase Storage
+  // ══════════════════════════════════════
+  async function handleImageUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
 
+    const label = document.getElementById('upload-btn-label');
+    label.className = 'img-upload-btn uploading';
+    label.textContent = '⏳ Uploading...';
+
+    try {
+      const ext      = file.name.split('.').pop();
+      const fileName = `pet_${Date.now()}.${ext}`;
+
+      // Upload to Supabase Storage
+      const uploadRes = await fetch(`${STOR}/object/${BUCKET}/${fileName}`, {
+        method:  'POST',
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type':  file.type,
+          'x-upsert':      'true',
+        },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.text();
+        throw new Error(err);
+      }
+
+      // Get public URL
+      uploadedImgUrl = `${STOR}/object/public/${BUCKET}/${fileName}`;
+
+      // Show preview
+      const preview = document.getElementById('img-preview');
+      preview.src   = uploadedImgUrl;
+      preview.style.display = 'block';
+
+      label.className   = 'img-upload-btn done';
+      label.textContent = '✅ Photo uploaded!';
+      showToast('📸 Photo uploaded to Supabase!');
+    } catch (err) {
+      label.className   = 'img-upload-btn';
+      label.textContent = '❌ Upload failed — tap to retry';
+      showToast('Upload failed: ' + err.message, true);
+      console.error(err);
+    }
+  }
+
+  // ══════════════════════════════════════
+  // TAGS
+  // ══════════════════════════════════════
   function renderTags() {
-    const wrap = document.getElementById('tags-wrap');
-    wrap.innerHTML = tags.map((t, i) => `
-      <div class="tag-chip">
-        ${t}
+    document.getElementById('tags-wrap').innerHTML = tags.map((t, i) => `
+      <div class="tag-chip">${t}
         <button onclick="removeTag(${i})">✕</button>
       </div>`).join('');
   }
@@ -566,28 +347,20 @@
   function addTag() {
     const inp = document.getElementById('tag-input');
     const val = inp.value.trim();
-    if (val && tags.length < 8) {
-      tags.push(val);
-      renderTags();
-      inp.value = '';
-    }
+    if (val && tags.length < 8) { tags.push(val); renderTags(); inp.value = ''; }
   }
 
-  function removeTag(i) {
-    tags.splice(i, 1);
-    renderTags();
-  }
+  function removeTag(i) { tags.splice(i, 1); renderTags(); }
 
   document.getElementById('tag-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') addTag();
   });
 
-  // ── VACCINES ──
-  let vaccines = [];
-
+  // ══════════════════════════════════════
+  // VACCINES
+  // ══════════════════════════════════════
   function renderVax() {
-    const list = document.getElementById('vax-list');
-    list.innerHTML = vaccines.map((v, i) => `
+    document.getElementById('vax-list').innerHTML = vaccines.map((v, i) => `
       <div class="vax-row">
         <input type="text" value="${v.name}" placeholder="Vaccine name"
           oninput="vaccines[${i}].name = this.value"/>
@@ -601,84 +374,158 @@
       </div>`).join('');
   }
 
-  function addVax() {
-    vaccines.push({ name: '', date: '', status: 'done' });
-    renderVax();
+  function addVax() { vaccines.push({ name:'', date:'', status:'done' }); renderVax(); }
+  function removeVax(i) { vaccines.splice(i, 1); renderVax(); }
+
+  // ══════════════════════════════════════
+  // LOAD DATA FROM SUPABASE
+  // ══════════════════════════════════════
+  async function loadData() {
+    try {
+      const res  = await fetch(`${API}/${TABLE}?order=created_at.desc&limit=1`, {
+        headers: HEADERS
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const rows = await res.json();
+
+      if (!rows || rows.length === 0) {
+        // No data yet — set defaults
+        tags     = ['🤝 Super Friendly', '💉 Vaccinated', '🍖 Treat Lover'];
+        vaccines = [
+          { name:'Rabies',    date:'Jan 2024', status:'done' },
+          { name:'DHPPi',     date:'Mar 2024', status:'done' },
+          { name:'Bordetella',date:'Jul 2025', status:'due'  },
+        ];
+        renderTags(); renderVax();
+        showToast('No existing profile — fill in details to create one!');
+        return;
+      }
+
+      const d = rows[0];
+      currentPetId = d.id;
+
+      // Fill fields
+      document.getElementById('petName').value        = d.name        || '';
+      document.getElementById('petBreed').value       = d.breed       || '';
+      document.getElementById('petAge').value         = d.age         || '';
+      document.getElementById('petGender').value      = d.gender      || '';
+      document.getElementById('petDescription').value = d.description || '';
+      document.getElementById('ownerName').value      = d.owner_name  || '';
+      document.getElementById('ownerPhone').value     = d.owner_phone || '';
+      document.getElementById('locality').value       = d.locality    || '';
+      document.getElementById('pincode').value        = d.pincode     || '';
+      document.getElementById('emergencyMsg').value   = d.emergency_msg || '';
+
+      // Image
+      if (d.image_url) {
+        uploadedImgUrl = d.image_url;
+        const preview  = document.getElementById('img-preview');
+        preview.src    = d.image_url;
+        preview.style.display = 'block';
+        const label    = document.getElementById('upload-btn-label');
+        label.className   = 'img-upload-btn done';
+        label.textContent = '✅ Photo loaded — tap to change';
+      }
+
+      // Tags & vaccines from JSON columns
+      tags     = d.tags     || [];
+      vaccines = d.vaccines || [];
+      renderTags(); renderVax();
+
+      document.getElementById('db-status').textContent = '● Connected';
+      document.getElementById('db-status').className  = 'db-status connected';
+
+    } catch (err) {
+      console.error('Load error:', err);
+      document.getElementById('db-status').textContent = '● DB Error';
+      document.getElementById('db-status').className  = 'db-status error';
+      showToast('Could not load data: ' + err.message, true);
+    }
   }
 
-  function removeVax(i) {
-    vaccines.splice(i, 1);
-    renderVax();
-  }
+  // ══════════════════════════════════════
+  // SAVE DATA TO SUPABASE
+  // ══════════════════════════════════════
+  async function saveData() {
+    const btn = document.getElementById('save-btn');
+    btn.disabled    = true;
+    btn.textContent = '⏳ Saving to Supabase...';
 
-  // ── SAVE DATA ──
-  function saveData() {
-    const data = {
-      petName:      document.getElementById('petName').value.trim(),
-      petBreed:     document.getElementById('petBreed').value.trim(),
-      petAge:       document.getElementById('petAge').value.trim(),
-      petPhoto:     document.getElementById('petPhoto').value.trim(),
-      ownerName:    document.getElementById('ownerName').value.trim(),
-      ownerPhone:   document.getElementById('ownerPhone').value.trim(),
-      locality:     document.getElementById('locality').value.trim(),
-      pincode:      document.getElementById('pincode').value.trim(),
-      emergencyMsg: document.getElementById('emergencyMsg').value.trim(),
-      tags,
-      vaccines,
+    const payload = {
+      name:          document.getElementById('petName').value.trim(),
+      breed:         document.getElementById('petBreed').value.trim(),
+      category:      document.getElementById('petBreed').value.trim(),
+      age:           document.getElementById('petAge').value.trim(),
+      gender:        document.getElementById('petGender').value,
+      description:   document.getElementById('petDescription').value.trim(),
+      image_url:     uploadedImgUrl || null,
+      owner_name:    document.getElementById('ownerName').value.trim(),
+      owner_phone:   document.getElementById('ownerPhone').value.trim(),
+      locality:      document.getElementById('locality').value.trim(),
+      pincode:       document.getElementById('pincode').value.trim(),
+      emergency_msg: document.getElementById('emergencyMsg').value.trim(),
+      tags:          tags,
+      vaccines:      vaccines,
+      status:        'active',
     };
 
-    localStorage.setItem('petProfileData', JSON.stringify(data));
+    try {
+      let res;
+      if (currentPetId) {
+        // UPDATE existing record
+        res = await fetch(`${API}/${TABLE}?id=eq.${currentPetId}`, {
+          method:  'PATCH',
+          headers: HEADERS,
+          body:    JSON.stringify(payload),
+        });
+      } else {
+        // INSERT new record
+        res = await fetch(`${API}/${TABLE}`, {
+          method:  'POST',
+          headers: HEADERS,
+          body:    JSON.stringify(payload),
+        });
+      }
 
-    const btn = document.getElementById('save-btn');
-    btn.textContent = '✅ Saved Successfully!';
-    btn.classList.add('saved');
-    setTimeout(() => {
-      btn.textContent = '💾 Save & Update Profile';
-      btn.classList.remove('saved');
-    }, 2500);
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText);
+      }
 
-    showToast('🎉 Profile updated! Open index.html to see changes.');
-  }
+      const result = await res.json();
+      if (!currentPetId && result && result[0]) {
+        currentPetId = result[0].id;
+      }
 
-  // ── LOAD DATA ──
-  function loadData() {
-    const raw = localStorage.getItem('petProfileData');
-    if (!raw) {
-      // Default sample data
-      tags = ['🤝 Super Friendly', '💉 Vaccinated', '🍖 Treat Lover'];
-      vaccines = [
-        { name: 'Rabies', date: 'Jan 2024', status: 'done' },
-        { name: 'DHPPi', date: 'Mar 2024', status: 'done' },
-        { name: 'Bordetella', date: 'Jul 2025', status: 'due' },
-      ];
-      renderTags(); renderVax();
-      return;
+      btn.textContent = '✅ Saved to Supabase!';
+      btn.classList.add('saved');
+      showToast('🎉 Profile saved! index.html will show latest data.');
+
+      setTimeout(() => {
+        btn.textContent = '💾 Save & Update Profile';
+        btn.classList.remove('saved');
+        btn.disabled    = false;
+      }, 2500);
+
+    } catch (err) {
+      console.error('Save error:', err);
+      btn.textContent = '❌ Save Failed — Try Again';
+      btn.disabled    = false;
+      showToast('Save failed: ' + err.message, true);
     }
-
-    const d = JSON.parse(raw);
-    document.getElementById('petName').value     = d.petName     || '';
-    document.getElementById('petBreed').value    = d.petBreed    || '';
-    document.getElementById('petAge').value      = d.petAge      || '';
-    document.getElementById('petPhoto').value    = d.petPhoto    || '';
-    document.getElementById('ownerName').value   = d.ownerName   || '';
-    document.getElementById('ownerPhone').value  = d.ownerPhone  || '';
-    document.getElementById('locality').value    = d.locality    || '';
-    document.getElementById('pincode').value     = d.pincode     || '';
-    document.getElementById('emergencyMsg').value= d.emergencyMsg|| '';
-    tags     = d.tags     || [];
-    vaccines = d.vaccines || [];
-    renderTags();
-    renderVax();
   }
 
-  // ── TOAST ──
-  function showToast(msg) {
+  // ══════════════════════════════════════
+  // TOAST
+  // ══════════════════════════════════════
+  function showToast(msg, isError = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
+    t.className   = 'toast' + (isError ? ' error' : '');
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 3500);
   }
 </script>
-
 </body>
 </html>
