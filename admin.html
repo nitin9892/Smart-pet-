@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel — Pet Profile</title>
+  <title>Owner Dashboard — Smart Pet Safety Belt</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -21,26 +22,30 @@
     }
     body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--charcoal); min-height: 100vh; }
 
-    /* LOGIN */
-    #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#FF6B6B,#FF9A8B,#FFE66D); }
-    .login-box { background:#fff; border-radius:24px; padding:2.5rem 2rem; width:90%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align:center; }
+    /* LOGIN / REGISTER */
+    #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#FF6B6B,#FF9A8B,#FFE66D); padding:1rem; }
+    .login-box { background:#fff; border-radius:24px; padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align:center; }
     .login-icon { font-size:3rem; margin-bottom:0.8rem; }
     .login-box h2 { font-family:'Nunito',sans-serif; font-size:1.6rem; font-weight:900; margin-bottom:0.3rem; color:var(--charcoal); }
-    .login-box p { font-size:0.85rem; color:#999; margin-bottom:1.8rem; }
-    .login-input { width:100%; padding:0.85rem 1rem; border:2px solid var(--border); border-radius:12px; font-size:1rem; font-family:'Inter',sans-serif; margin-bottom:1rem; outline:none; transition:border 0.2s; text-align:center; letter-spacing:3px; }
+    .login-box p { font-size:0.85rem; color:#999; margin-bottom:1.4rem; }
+    .login-input { width:100%; padding:0.85rem 1rem; border:2px solid var(--border); border-radius:12px; font-size:1rem; font-family:'Inter',sans-serif; margin-bottom:1rem; outline:none; transition:border 0.2s; text-align:center; }
     .login-input:focus { border-color:var(--coral); }
+    .form-label { display:block; text-align:left; font-size:0.72rem; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.35rem; font-family:'Inter',sans-serif; }
     .login-btn { width:100%; padding:0.9rem; background:linear-gradient(135deg,var(--coral),#ff9a8b); color:#fff; border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 15px rgba(255,107,107,0.4); }
     .login-btn:hover { transform:translateY(-2px); }
     .login-btn:active { transform:scale(0.98); }
+    .login-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
     .login-error { color:var(--red); font-size:0.82rem; margin-top:0.7rem; display:none; font-weight:600; }
+    .auth-tabs { display:flex; background:#F1F3F7; border-radius:50px; padding:5px; margin-bottom:1.5rem; }
+    .auth-tab { flex:1; border:none; background:transparent; padding:0.6rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; color:#999; transition:all 0.2s; }
+    .auth-tab.active { background:var(--coral); color:#fff; box-shadow:0 3px 10px rgba(255,107,107,0.35); }
 
     /* ADMIN PANEL */
     #admin-panel { display:none; }
-    .topbar { background:var(--white); border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-    .topbar-left { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem; }
-    .topbar-right { display:flex; gap:0.7rem; }
-    .btn-preview { background:var(--charcoal); color:#fff; border:none; padding:0.5rem 1.1rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; }
-    .btn-preview:hover { background:#3d5166; }
+    .topbar { background:var(--white); border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); flex-wrap:wrap; gap:0.6rem; }
+    .topbar-left { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+    .topbar-right { display:flex; gap:0.7rem; align-items:center; flex-wrap:wrap; }
+    .user-chip { font-family:'Nunito',sans-serif; font-size:0.78rem; font-weight:700; color:#666; background:#F1F3F7; padding:0.45rem 0.9rem; border-radius:50px; }
     .btn-logout { background:transparent; color:#999; border:1.5px solid var(--border); padding:0.5rem 1rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
     .btn-logout:hover { color:var(--red); border-color:var(--red); }
 
@@ -57,6 +62,27 @@
     .field textarea { resize:vertical; min-height:90px; line-height:1.5; }
     .field-row { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
     @media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
+
+    /* MY PETS GRID */
+    .pets-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media(max-width:520px){ .pets-grid { grid-template-columns:1fr; } }
+    .pet-card { border:2px solid var(--border); border-radius:16px; padding:1rem; display:flex; flex-direction:column; gap:0.55rem; transition:all 0.2s; background:#fff; }
+    .pet-card:hover { border-color:var(--coral); box-shadow:0 8px 20px rgba(255,107,107,0.12); }
+    .pet-card img { width:100%; height:130px; object-fit:cover; border-radius:10px; background:#FAFAFA; }
+    .pet-card .ph { width:100%; height:130px; border-radius:10px; background:#FFF3E2; display:flex; align-items:center; justify-content:center; font-size:3rem; }
+    .pet-card h4 { font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:900; }
+    .pet-card .meta { font-size:0.78rem; color:#999; }
+    .pet-card-actions { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:auto; }
+    .mini-btn { border:none; padding:0.4rem 0.75rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.72rem; cursor:pointer; transition:all 0.2s; }
+    .mini-btn.edit { background:var(--coral); color:#fff; }
+    .mini-btn.view { background:var(--charcoal); color:#fff; }
+    .mini-btn.link { background:#F3F0FF; color:var(--purple); }
+    .mini-btn.qr  { background:#E6FFFA; color:#0d9488; }
+    .mini-btn.del { background:#FEE2E2; color:var(--red); }
+    .mini-btn:hover { transform:translateY(-1px); }
+    .empty-pets { text-align:center; padding:2rem 1rem; color:#999; font-family:'Nunito',sans-serif; font-weight:700; }
+    .add-pet-btn { width:100%; padding:0.9rem; background:#F0FFF4; color:#166534; border:2px dashed var(--green); border-radius:16px; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; cursor:pointer; transition:all 0.2s; margin-bottom:1.2rem; }
+    .add-pet-btn:hover { background:var(--green); color:#fff; }
 
     /* IMAGE UPLOAD */
     .img-upload-wrap { position:relative; }
@@ -85,6 +111,15 @@
     .tag-add-row input:focus { border-color:var(--green); }
     .tag-add-btn { background:var(--green); color:#fff; border:none; padding:0.6rem 1rem; border-radius:10px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; white-space:nowrap; }
 
+    /* TAG LINK ROW (per pet) */
+    .link-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.2rem; }
+    .link-btn { border:none; padding:0.55rem 1rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.35rem; }
+    .link-btn.preview { background:var(--charcoal); color:#fff; }
+    .link-btn.copy { background:#F3F0FF; color:var(--purple); }
+    .link-btn.qr { background:#E6FFFA; color:#0d9488; }
+    .link-btn.delete { background:#FEE2E2; color:var(--red); }
+    .link-btn:hover { transform:translateY(-1px); }
+
     /* SAVE BUTTON */
     .save-btn { width:100%; padding:1rem; background:linear-gradient(135deg,var(--coral),#ff9a8b); color:#fff; border:none; border-radius:16px; font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:900; cursor:pointer; transition:all 0.2s cubic-bezier(.34,1.56,.64,1); box-shadow:0 6px 20px rgba(255,107,107,0.4); }
     .save-btn:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(255,107,107,0.45); }
@@ -101,190 +136,473 @@
     .db-status { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; padding:0.25rem 0.7rem; border-radius:50px; }
     .db-status.connected { background:#f0fff4; color:#166534; }
     .db-status.error { background:#FEE2E2; color:#dc2626; }
+
+    /* QR MODAL */
+    #qr-modal { position:fixed; inset:0; background:rgba(44,62,80,0.6); display:none; align-items:center; justify-content:center; z-index:500; padding:1rem; }
+    #qr-modal.open { display:flex; }
+    .qr-card { background:#fff; border-radius:20px; padding:1.6rem; text-align:center; max-width:320px; width:100%; }
+    .qr-card h3 { font-family:'Nunito',sans-serif; margin-bottom:0.8rem; }
+    .qr-card img { width:220px; height:220px; border:2px solid var(--border); border-radius:12px; margin-bottom:0.6rem; }
+    .qr-url { font-size:0.7rem; color:#999; word-break:break-all; margin-bottom:0.9rem; }
+    .qr-close { background:var(--charcoal); color:#fff; border:none; padding:0.55rem 1.4rem; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; cursor:pointer; }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ═══════════ LOGIN / REGISTER ═══════════ -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-icon">🔐</div>
-    <h2>Admin Panel</h2>
-    <p>Enter password to edit pet profile</p>
-    <input class="login-input" type="password" id="pwd-input" placeholder="••••••••" maxlength="20"/>
-    <button class="login-btn" onclick="doLogin()">Unlock Panel</button>
-    <div class="login-error" id="login-error">❌ Wrong password! Try again.</div>
+
+    <!-- LOGIN TAB -->
+    <div id="auth-login">
+      <div class="login-icon">🐾</div>
+      <h2>Owner Login</h2>
+      <p>Smart Pet Safety Belt — manage your pets</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+      </div>
+      <input class="login-input" type="email" id="login-email" placeholder="Enter your email"/>
+      <input class="login-input" type="password" id="login-pass" placeholder="Enter your password"/>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Login →</button>
+      <div class="login-error" id="login-error">❌ Wrong email or password.</div>
+    </div>
+
+    <!-- REGISTER TAB -->
+    <div id="auth-register" style="display:none">
+      <div class="login-icon">🐕</div>
+      <h2>Create Account</h2>
+      <p>Free account — register yourself and your pets</p>
+      <div class="auth-tabs">
+        <button class="auth-tab" id="tab-login2" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab active" id="tab-register2" onclick="switchTab('register')">Create Account</button>
+      </div>
+      <label class="form-label">Full Name</label>
+      <input class="login-input" type="text" id="reg-name" placeholder="e.g. Nitin Yadav" style="text-align:left"/>
+      <label class="form-label">Email</label>
+      <input class="login-input" type="email" id="reg-email" placeholder="you@example.com" style="text-align:left"/>
+      <label class="form-label">Mobile Number</label>
+      <input class="login-input" type="tel" id="reg-mobile" placeholder="10-digit mobile" style="text-align:left"/>
+      <label class="form-label">Password (min 6 characters)</label>
+      <input class="login-input" type="password" id="reg-pass" placeholder="Create a password"/>
+      <label class="form-label">Confirm Password</label>
+      <input class="login-input" type="password" id="reg-pass2" placeholder="Re-enter password"/>
+      <button class="login-btn" id="reg-btn" onclick="doRegister()">Create My Account</button>
+      <div class="login-error" id="reg-error">❌ Please check your details.</div>
+    </div>
+
+    <!-- VERIFY EMAIL -->
+    <div id="auth-verify" style="display:none">
+      <div class="login-icon">📧</div>
+      <h2>Verify Your Email</h2>
+      <p>We sent a verification link to <b id="verify-email"></b>.<br/>Open your inbox and click that link, then login here.</p>
+      <button class="login-btn" onclick="switchTab('login')">✅ I Have Verified — Login</button>
+    </div>
+
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ═══════════ OWNER DASHBOARD ═══════════ -->
 <div id="admin-panel">
   <div class="topbar">
-    <div class="topbar-left">🐾 <span>Pet Profile Admin</span>
+    <div class="topbar-left">🐾 <span>Smart Pet Safety Belt</span>
       <span class="db-status connected" id="db-status">● Supabase</span>
     </div>
     <div class="topbar-right">
-      <a class="btn-preview" href="index.html" target="_blank">👁 Preview Page</a>
+      <span class="user-chip" id="user-chip">👤</span>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
     </div>
   </div>
 
   <div class="container">
 
-    <!-- Pet Info -->
-    <div class="section-card">
-      <div class="section-title"><span>🐶</span> Pet Information</div>
-      <div class="field-row">
-        <div class="field">
-          <label>Pet Name</label>
-          <input type="text" id="petName" placeholder="e.g. Bruno"/>
-        </div>
-        <div class="field">
-          <label>Breed / Category</label>
-          <input type="text" id="petBreed" placeholder="e.g. Golden Retriever"/>
-        </div>
+    <!-- MY PETS LIST -->
+    <div id="pets-list-section">
+      <div class="section-card">
+        <div class="section-title"><span>🐶</span> My Pets</div>
+        <div class="pets-grid" id="pets-grid"></div>
+        <div class="empty-pets" id="empty-pets" style="display:none">No pets yet — add your first pet below! 🐾</div>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Age</label>
-          <input type="text" id="petAge" placeholder="e.g. 3 yrs"/>
+      <button class="add-pet-btn" onclick="openEditor(null)">＋ Add New Pet</button>
+    </div>
+
+    <!-- EDITOR -->
+    <div id="editor-section" style="display:none">
+      <div class="section-card" style="background:#FFF9F0">
+        <div class="section-title"><span>🔗</span> <span id="editor-heading">Add New Pet</span></div>
+        <div class="link-row" id="link-row" style="display:none">
+          <button class="link-btn preview" onclick="previewPet()">👁 Preview Page</button>
+          <button class="link-btn copy" onclick="copyPetLink()">📋 Copy Link</button>
+          <button class="link-btn qr" onclick="showPetQr()">📲 QR Code</button>
+          <button class="link-btn delete" onclick="deletePet()">🗑 Delete Pet</button>
         </div>
-        <div class="field">
-          <label>Gender</label>
-          <select id="petGender">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
+        <p style="font-size:0.78rem;color:#999">This is the link for your pet's NFC tag & QR code.</p>
       </div>
-      <div class="field">
-        <label>Description</label>
-        <textarea id="petDescription" placeholder="Brief description about your pet..."></textarea>
-      </div>
-      <div class="field">
-        <label>Pet Photo</label>
-        <div class="img-upload-wrap">
-          <div class="img-upload-btn" id="upload-btn-label" onclick="document.getElementById('petPhotoInput').click()">
-            📷 Click to upload pet photo
+
+      <!-- Pet Info -->
+      <div class="section-card">
+        <div class="section-title"><span>🐶</span> Pet Information</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Pet Name</label>
+            <input type="text" id="petName" placeholder="e.g. Bruno"/>
           </div>
-          <input type="file" id="petPhotoInput" accept="image/*" onchange="handleImageUpload(this)"/>
-          <img id="img-preview" class="img-preview" src="" alt="Preview"/>
+          <div class="field">
+            <label>Breed / Category</label>
+            <input type="text" id="petBreed" placeholder="e.g. Golden Retriever"/>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Owner Info -->
-    <div class="section-card">
-      <div class="section-title"><span>👤</span> Owner Information</div>
-      <div class="field-row">
-        <div class="field">
-          <label>Owner Name</label>
-          <input type="text" id="ownerName" placeholder="e.g. Rahul Sharma"/>
-        </div>
-        <div class="field">
-          <label>Phone Number</label>
-          <input type="tel" id="ownerPhone" placeholder="e.g. 9876543210"/>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Locality</label>
-          <input type="text" id="locality" placeholder="e.g. Sector 15, Noida"/>
+        <div class="field-row">
+          <div class="field">
+            <label>Age</label>
+            <input type="text" id="petAge" placeholder="e.g. 3 yrs"/>
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <select id="petGender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
         </div>
         <div class="field">
-          <label>Pincode</label>
-          <input type="text" id="pincode" placeholder="e.g. 201301"/>
+          <label>Description</label>
+          <textarea id="petDescription" placeholder="Brief description about your pet..."></textarea>
+        </div>
+        <div class="field">
+          <label>Pet Photo</label>
+          <div class="img-upload-wrap">
+            <div class="img-upload-btn" id="upload-btn-label" onclick="document.getElementById('petPhotoInput').click()">
+              📷 Click to upload pet photo
+            </div>
+            <input type="file" id="petPhotoInput" accept="image/*" onchange="handleImageUpload(this)"/>
+            <img id="img-preview" class="img-preview" src="" alt="Preview"/>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Personality Tags -->
-    <div class="section-card">
-      <div class="section-title"><span>🏷️</span> Personality Tags</div>
-      <div class="tags-wrap" id="tags-wrap"></div>
-      <div class="tag-add-row">
-        <input type="text" id="tag-input" placeholder="e.g. 🤝 Friendly" maxlength="25"/>
-        <button class="tag-add-btn" onclick="addTag()">+ Add</button>
+      <!-- Owner Info -->
+      <div class="section-card">
+        <div class="section-title"><span>👤</span> Owner Information</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Owner Name</label>
+            <input type="text" id="ownerName" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="ownerPhone" placeholder="e.g. 9876543210"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Locality</label>
+            <input type="text" id="locality" placeholder="e.g. Sector 15, Noida"/>
+          </div>
+          <div class="field">
+            <label>Pincode</label>
+            <input type="text" id="pincode" placeholder="e.g. 201301"/>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Vaccinations -->
-    <div class="section-card">
-      <div class="section-title"><span>💉</span> Vaccination Records</div>
-      <div id="vax-list"></div>
-      <button class="add-vax-btn" onclick="addVax()">+ Add Vaccine</button>
-    </div>
-
-    <!-- Emergency Message -->
-    <div class="section-card">
-      <div class="section-title"><span>🚨</span> Emergency Message</div>
-      <div class="field">
-        <label>Message (shown when tag is scanned)</label>
-        <textarea id="emergencyMsg" placeholder="If you found my pet, please call..."></textarea>
+      <!-- Personality Tags -->
+      <div class="section-card">
+        <div class="section-title"><span>🏷️</span> Personality Tags <span style="font-size:0.7rem;color:#999;font-weight:400">(max 8)</span></div>
+        <div class="tags-wrap" id="tags-wrap"></div>
+        <div class="tag-add-row">
+          <input type="text" id="tag-input" placeholder="e.g. 🤝 Friendly" maxlength="25"/>
+          <button class="tag-add-btn" onclick="addTag()">+ Add</button>
+        </div>
       </div>
-    </div>
 
-    <!-- Save -->
-    <button class="save-btn" id="save-btn" onclick="saveData()">💾 Save & Update Profile</button>
+      <!-- Vaccinations -->
+      <div class="section-card">
+        <div class="section-title"><span>💉</span> Vaccination Records</div>
+        <div id="vax-list"></div>
+        <button class="add-vax-btn" onclick="addVax()">+ Add Vaccine</button>
+      </div>
+
+      <!-- Emergency Message -->
+      <div class="section-card">
+        <div class="section-title"><span>🚨</span> Emergency Message</div>
+        <div class="field">
+          <label>Message (shown when tag is scanned)</label>
+          <textarea id="emergencyMsg" placeholder="If you found my pet, please call..."></textarea>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <button class="save-btn" id="save-btn" onclick="saveData()">💾 Save & Update Profile</button>
+      <div style="height:1rem"></div>
+      <button class="btn-logout" style="width:100%" onclick="backToPets()">← Back to My Pets</button>
+    </div>
 
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- QR MODAL -->
+<div id="qr-modal" onclick="if(event.target===this) closeQr()">
+  <div class="qr-card">
+    <h3>📲 Pet QR Code</h3>
+    <img id="qr-img" alt="QR code"/>
+    <div class="qr-url" id="qr-url"></div>
+    <button class="qr-close" onclick="closeQr()">Close</button>
+  </div>
+</div>
+
 <script>
   // ══════════════════════════════════════
-  // SUPABASE CONFIG
+  // SUPABASE CONFIG (auth + db + storage)
   // ══════════════════════════════════════
-  const SUPABASE_URL    = 'https://qxzxzuyrzuqwgdunzlek.supabase.co';
-  const SUPABASE_KEY    = 'sb_publishable_7zMmBkBrorOIc5ans0vwcQ__IpBgU2C';
-  const TABLE           = 'pets';
-  const BUCKET          = 'pet-images';
-  const ADMIN_PASSWORD  = 'pet1234'; // Change this!
+  const SUPABASE_URL = 'https://qxzxzuyrzuqwgdunzlek.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_7zMmBkBrorOIc5ans0vwcQ__IpBgU2C';
+  const TABLE        = 'pets';
+  const BUCKET       = 'pet-images';
 
-  const API  = `${SUPABASE_URL}/rest/v1`;
-  const STOR = `${SUPABASE_URL}/storage/v1`;
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const HEADERS = {
-    'apikey':        SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type':  'application/json',
-    'Prefer':        'return=representation',
-  };
-
-  let currentPetId  = null;
+  let currentUser   = null;   // logged-in owner
+  let myPets        = [];     // this owner's pets only
+  let currentPetId  = null;   // pet being edited (null = new)
   let uploadedImgUrl = null;
   let tags           = [];
   let vaccines       = [];
 
   // ══════════════════════════════════════
-  // LOGIN
+  // AUTH — LOGIN / REGISTER / SESSION
   // ══════════════════════════════════════
-  function doLogin() {
-    const val = document.getElementById('pwd-input').value;
-    if (val === ADMIN_PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display  = 'block';
-      loadData();
+  function switchTab(which) {
+    document.getElementById('auth-login').style.display    = which === 'login'    ? 'block' : 'none';
+    document.getElementById('auth-register').style.display  = which === 'register' ? 'block' : 'none';
+    document.getElementById('auth-verify').style.display    = 'none';
+    document.getElementById('login-error').style.display    = 'none';
+    document.getElementById('reg-error').style.display      = 'none';
+    document.getElementById('tab-login').classList.toggle('active', which === 'login');
+    document.getElementById('tab-register').classList.toggle('active', which === 'register');
+    document.getElementById('tab-login2').classList.toggle('active', which === 'login');
+    document.getElementById('tab-register2').classList.toggle('active', which === 'register');
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const btn   = document.getElementById('login-btn');
+    if (!email || !pass) { document.getElementById('login-error').textContent = '❌ Please enter email and password.'; document.getElementById('login-error').style.display = 'block'; return; }
+
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Login →';
+
+    if (error || !data.session) {
+      const el = document.getElementById('login-error');
+      el.textContent = error && error.message ? '❌ ' + error.message : '❌ Login failed. Please verify your email first.';
+      el.style.display = 'block';
+      return;
+    }
+    enterDashboard(data.user);
+  }
+
+  async function doRegister() {
+    const name    = document.getElementById('reg-name').value.trim();
+    const email   = document.getElementById('reg-email').value.trim();
+    const mobile  = document.getElementById('reg-mobile').value.replace(/\D/g, '');
+    const pass    = document.getElementById('reg-pass').value;
+    const pass2   = document.getElementById('reg-pass2').value;
+    const errEl   = document.getElementById('reg-error');
+    const btn     = document.getElementById('reg-btn');
+
+    const fail = (msg) => { errEl.textContent = '❌ ' + msg; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create My Account'; };
+
+    if (name.length < 2)                    return fail('Please enter your full name.');
+    if (!/^\S+@\S+\.\S+$/.test(email))       return fail('Please enter a valid email.');
+    if (!/^[6-9]\d{9}$/.test(mobile))        return fail('Mobile must be a valid 10-digit Indian number.');
+    if (pass.length < 6)                     return fail('Password must be at least 6 characters.');
+    if (pass !== pass2)                      return fail('Passwords do not match.');
+
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: name, mobile: mobile } }
+    });
+
+    if (error) return fail(error.message);
+
+    if (data.session) {
+      // Email confirmation off — straight into dashboard
+      enterDashboard(data.user);
     } else {
-      document.getElementById('login-error').style.display = 'block';
-      document.getElementById('pwd-input').value = '';
+      // Email verification required
+      document.getElementById('verify-email').textContent = email;
+      document.getElementById('auth-register').style.display = 'none';
+      document.getElementById('auth-verify').style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Create My Account';
     }
   }
 
-  document.getElementById('pwd-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-
-  function doLogout() {
+  async function doLogout() {
+    await sb.auth.signOut();
+    currentUser = null;
+    document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('admin-panel').style.display  = 'none';
-    document.getElementById('pwd-input').value = '';
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-pass').value = '';
+    showToast('Logged out. See you soon! 👋');
+  }
+
+  // Restore session on page load
+  (async () => {
+    const { data } = await sb.auth.getSession();
+    if (data && data.session) enterDashboard(data.session.user);
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) enterDashboard(session.user);
+    });
+  })();
+
+  // ══════════════════════════════════════
+  // DASHBOARD
+  // ══════════════════════════════════════
+  async function enterDashboard(user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display  = 'block';
+    document.getElementById('editor-section').style.display = 'none';
+    document.getElementById('pets-list-section').style.display = 'block';
+
+    const meta = user.user_metadata || {};
+    document.getElementById('user-chip').textContent = '👤 ' + (meta.full_name || user.email);
+
+    // Connection check
+    const { error } = await sb.from(TABLE).select('id').limit(1);
+    const st = document.getElementById('db-status');
+    if (error) { st.textContent = '● DB Error'; st.className = 'db-status error'; }
+    else       { st.textContent = '● Connected'; st.className = 'db-status connected'; }
+
+    loadMyPets();
+  }
+
+  async function loadMyPets() {
+    const { data, error } = await sb
+      .from(TABLE)
+      .select('*')
+      .eq('owner_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) { showToast('Could not load pets: ' + error.message, true); return; }
+
+    myPets = data || [];
+    renderPets();
+  }
+
+  function renderPets() {
+    const grid = document.getElementById('pets-grid');
+    const empty = document.getElementById('empty-pets');
+    grid.innerHTML = '';
+
+    if (myPets.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    myPets.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'pet-card';
+      const thumb = p.image_url
+        ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.outerHTML='<div class=\\'ph\\'>🐾</div>'"/>`
+        : `<div class="ph">🐾</div>`;
+      card.innerHTML = `
+        ${thumb}
+        <h4>${p.name || 'Pet'}</h4>
+        <div class="meta">${[p.breed, p.age].filter(Boolean).join(' · ') || 'No breed set'}</div>
+        <div class="meta">📍 ${p.locality || '—'}</div>
+        <div class="pet-card-actions">
+          <button class="mini-btn edit" onclick='openEditorById(${JSON.stringify(p.id)})'>✏️ Edit</button>
+          <button class="mini-btn view" onclick='previewById(${JSON.stringify(p.id)})'>👁 Preview</button>
+          <button class="mini-btn link" onclick='copyById(${JSON.stringify(p.id)})'>🔗 Link</button>
+          <button class="mini-btn qr"  onclick='qrById(${JSON.stringify(p.id)})'>📲 QR</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  function petLink(id) { return 'index.html?id=' + id; }
+
+  function previewById(id) { window.open(petLink(id), '_blank'); }
+
+  function copyById(id) {
+    const url = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(id);
+    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copied: ' + url));
+  }
+
+  let qrCurrentUrl = '';
+  function qrById(id) {
+    qrCurrentUrl = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(id);
+    document.getElementById('qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=440x440&data=' + encodeURIComponent(qrCurrentUrl);
+    document.getElementById('qr-url').textContent = qrCurrentUrl;
+    document.getElementById('qr-modal').classList.add('open');
+  }
+  function closeQr() { document.getElementById('qr-modal').classList.remove('open'); }
+
+  // ══════════════════════════════════════
+  // EDITOR — open / close
+  // ══════════════════════════════════════
+  function backToPets() {
+    document.getElementById('editor-section').style.display = 'none';
+    document.getElementById('pets-list-section').style.display = 'block';
+    loadMyPets();
+  }
+
+  function openEditorById(id) {
+    const pet = myPets.find(p => String(p.id) === String(id));
+    openEditor(pet || null);
+  }
+
+  function openEditor(pet) {
+    currentPetId = pet ? pet.id : null;
+    uploadedImgUrl = pet ? (pet.image_url || null) : null;
+
+    document.getElementById('editor-heading').textContent = pet ? 'Edit — ' + (pet.name || 'Pet') : 'Add New Pet';
+    document.getElementById('link-row').style.display = pet ? 'flex' : 'none';
+
+    const meta = currentUser.user_metadata || {};
+    const p = pet || {};
+    document.getElementById('petName').value        = p.name        || '';
+    document.getElementById('petBreed').value       = p.breed       || '';
+    document.getElementById('petAge').value         = p.age         || '';
+    document.getElementById('petGender').value      = p.gender      || '';
+    document.getElementById('petDescription').value = p.description || '';
+    document.getElementById('ownerName').value      = p.owner_name  || meta.full_name || '';
+    document.getElementById('ownerPhone').value     = p.owner_phone || meta.mobile   || '';
+    document.getElementById('locality').value       = p.locality    || '';
+    document.getElementById('pincode').value        = p.pincode     || '';
+    document.getElementById('emergencyMsg').value   = p.emergency_msg || '';
+
+    // image preview
+    const preview = document.getElementById('img-preview');
+    const label   = document.getElementById('upload-btn-label');
+    document.getElementById('petPhotoInput').value = '';
+    if (p.image_url) {
+      preview.src = p.image_url; preview.style.display = 'block';
+      label.className = 'img-upload-btn done'; label.textContent = '✅ Photo loaded — tap to change';
+    } else {
+      preview.style.display = 'none';
+      label.className = 'img-upload-btn'; label.textContent = '📷 Click to upload pet photo';
+    }
+
+    tags     = Array.isArray(p.tags) ? p.tags.slice() : [];
+    vaccines = Array.isArray(p.vaccines) ? JSON.parse(JSON.stringify(p.vaccines)) : [];
+    renderTags(); renderVax();
+
+    document.getElementById('pets-list-section').style.display = 'none';
+    document.getElementById('editor-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // ══════════════════════════════════════
   // IMAGE UPLOAD → Supabase Storage
+  // (logged-in owners only, via RLS policy)
   // ══════════════════════════════════════
   async function handleImageUpload(input) {
     const file = input.files[0];
@@ -295,37 +613,21 @@
     label.textContent = '⏳ Uploading...';
 
     try {
-      const ext      = file.name.split('.').pop();
-      const fileName = `pet_${Date.now()}.${ext}`;
+      const ext  = file.name.split('.').pop().replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
+      const path = `${currentUser.id}/${Date.now()}.${ext}`;
 
-      // Upload to Supabase Storage
-      const uploadRes = await fetch(`${STOR}/object/${BUCKET}/${fileName}`, {
-        method:  'POST',
-        headers: {
-          'apikey':        SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type':  file.type,
-          'x-upsert':      'true',
-        },
-        body: file,
-      });
+      const { error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: false });
+      if (error) throw new Error(error.message);
 
-      if (!uploadRes.ok) {
-        const err = await uploadRes.text();
-        throw new Error(err);
-      }
+      const { data } = sb.storage.from(BUCKET).getPublicUrl(path);
+      uploadedImgUrl = data.publicUrl;
 
-      // Get public URL
-      uploadedImgUrl = `${STOR}/object/public/${BUCKET}/${fileName}`;
-
-      // Show preview
       const preview = document.getElementById('img-preview');
       preview.src   = uploadedImgUrl;
       preview.style.display = 'block';
-
       label.className   = 'img-upload-btn done';
       label.textContent = '✅ Photo uploaded!';
-      showToast('📸 Photo uploaded to Supabase!');
+      showToast('📸 Photo uploaded!');
     } catch (err) {
       label.className   = 'img-upload-btn';
       label.textContent = '❌ Upload failed — tap to retry';
@@ -348,6 +650,7 @@
     const inp = document.getElementById('tag-input');
     const val = inp.value.trim();
     if (val && tags.length < 8) { tags.push(val); renderTags(); inp.value = ''; }
+    else if (tags.length >= 8) showToast('Maximum 8 tags allowed.');
   }
 
   function removeTag(i) { tags.splice(i, 1); renderTags(); }
@@ -378,129 +681,51 @@
   function removeVax(i) { vaccines.splice(i, 1); renderVax(); }
 
   // ══════════════════════════════════════
-  // LOAD DATA FROM SUPABASE
-  // ══════════════════════════════════════
-  async function loadData() {
-    try {
-      const res  = await fetch(`${API}/${TABLE}?order=created_at.desc&limit=1`, {
-        headers: HEADERS
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-      const rows = await res.json();
-
-      if (!rows || rows.length === 0) {
-        // No data yet — set defaults
-        tags     = ['🤝 Super Friendly', '💉 Vaccinated', '🍖 Treat Lover'];
-        vaccines = [
-          { name:'Rabies',    date:'Jan 2024', status:'done' },
-          { name:'DHPPi',     date:'Mar 2024', status:'done' },
-          { name:'Bordetella',date:'Jul 2025', status:'due'  },
-        ];
-        renderTags(); renderVax();
-        showToast('No existing profile — fill in details to create one!');
-        return;
-      }
-
-      const d = rows[0];
-      currentPetId = d.id;
-
-      // Fill fields
-      document.getElementById('petName').value        = d.name        || '';
-      document.getElementById('petBreed').value       = d.breed       || '';
-      document.getElementById('petAge').value         = d.age         || '';
-      document.getElementById('petGender').value      = d.gender      || '';
-      document.getElementById('petDescription').value = d.description || '';
-      document.getElementById('ownerName').value      = d.owner_name  || '';
-      document.getElementById('ownerPhone').value     = d.owner_phone || '';
-      document.getElementById('locality').value       = d.locality    || '';
-      document.getElementById('pincode').value        = d.pincode     || '';
-      document.getElementById('emergencyMsg').value   = d.emergency_msg || '';
-
-      // Image
-      if (d.image_url) {
-        uploadedImgUrl = d.image_url;
-        const preview  = document.getElementById('img-preview');
-        preview.src    = d.image_url;
-        preview.style.display = 'block';
-        const label    = document.getElementById('upload-btn-label');
-        label.className   = 'img-upload-btn done';
-        label.textContent = '✅ Photo loaded — tap to change';
-      }
-
-      // Tags & vaccines from JSON columns
-      tags     = d.tags     || [];
-      vaccines = d.vaccines || [];
-      renderTags(); renderVax();
-
-      document.getElementById('db-status').textContent = '● Connected';
-      document.getElementById('db-status').className  = 'db-status connected';
-
-    } catch (err) {
-      console.error('Load error:', err);
-      document.getElementById('db-status').textContent = '● DB Error';
-      document.getElementById('db-status').className  = 'db-status error';
-      showToast('Could not load data: ' + err.message, true);
-    }
-  }
-
-  // ══════════════════════════════════════
-  // SAVE DATA TO SUPABASE
+  // SAVE DATA (insert new pet / update own pet)
   // ══════════════════════════════════════
   async function saveData() {
     const btn = document.getElementById('save-btn');
     btn.disabled    = true;
     btn.textContent = '⏳ Saving to Supabase...';
 
+    const breed = document.getElementById('petBreed').value.trim();
+
     const payload = {
+      owner_id:      currentUser.id,
       name:          document.getElementById('petName').value.trim(),
-      breed:         document.getElementById('petBreed').value.trim(),
-      category:      document.getElementById('petBreed').value.trim(),
+      breed:         breed,
+      category:      breed,
       age:           document.getElementById('petAge').value.trim(),
       gender:        document.getElementById('petGender').value,
       description:   document.getElementById('petDescription').value.trim(),
-      image_url:     uploadedImgUrl || null,
+      image_url:     uploadedImgUrl,
       owner_name:    document.getElementById('ownerName').value.trim(),
       owner_phone:   document.getElementById('ownerPhone').value.trim(),
       locality:      document.getElementById('locality').value.trim(),
       pincode:       document.getElementById('pincode').value.trim(),
       emergency_msg: document.getElementById('emergencyMsg').value.trim(),
       tags:          tags,
-      vaccines:      vaccines,
+      vaccines:      vaccines.filter(v => (v.name || '').trim() !== ''),
       status:        'active',
     };
 
     try {
-      let res;
       if (currentPetId) {
-        // UPDATE existing record
-        res = await fetch(`${API}/${TABLE}?id=eq.${currentPetId}`, {
-          method:  'PATCH',
-          headers: HEADERS,
-          body:    JSON.stringify(payload),
-        });
+        // UPDATE — RLS allows only this owner's pet
+        const { error } = await sb.from(TABLE).update(payload).eq('id', currentPetId);
+        if (error) throw new Error(error.message);
       } else {
-        // INSERT new record
-        res = await fetch(`${API}/${TABLE}`, {
-          method:  'POST',
-          headers: HEADERS,
-          body:    JSON.stringify(payload),
-        });
-      }
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText);
-      }
-
-      const result = await res.json();
-      if (!currentPetId && result && result[0]) {
-        currentPetId = result[0].id;
+        // INSERT — new pet with unique id, linked to this owner
+        const { data, error } = await sb.from(TABLE).insert(payload).select('id').single();
+        if (error) throw new Error(error.message);
+        currentPetId = data.id;
+        document.getElementById('link-row').style.display = 'flex';
+        document.getElementById('editor-heading').textContent = 'Edit — ' + (payload.name || 'Pet');
       }
 
       btn.textContent = '✅ Saved to Supabase!';
       btn.classList.add('saved');
-      showToast('🎉 Profile saved! index.html will show latest data.');
+      showToast('🎉 Profile saved! Tag link is ready.');
 
       setTimeout(() => {
         btn.textContent = '💾 Save & Update Profile';
@@ -514,6 +739,30 @@
       btn.disabled    = false;
       showToast('Save failed: ' + err.message, true);
     }
+  }
+
+  // ══════════════════════════════════════
+  // DELETE PET
+  // ══════════════════════════════════════
+  async function deletePet() {
+    if (!currentPetId) return;
+    if (!confirm('Delete this pet profile permanently? This cannot be undone.')) return;
+
+    const { error } = await sb.from(TABLE).delete().eq('id', currentPetId);
+    if (error) { showToast('Delete failed: ' + error.message, true); return; }
+    showToast('🗑 Pet profile deleted.');
+    backToPets();
+  }
+
+  // per-pet link helpers (editor)
+  function previewPet()  { if (currentPetId) window.open(petLink(currentPetId), '_blank'); }
+  function copyPetLink() {
+    if (!currentPetId) return;
+    const url = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(currentPetId);
+    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copied: ' + url));
+  }
+  function showPetQr() {
+    if (currentPetId) qrById(currentPetId);
   }
 
   // ══════════════════════════════════════
