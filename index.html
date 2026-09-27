@@ -126,12 +126,25 @@
   let globalPhone = '';
 
   // ══════════════════════════════════════
-  // FETCH LATEST PET FROM SUPABASE
+  // FETCH THIS SPECIFIC PET BY UNIQUE ID
+  // (index.html?id=<PET_ID> — NFC/QR link)
   // ══════════════════════════════════════
+  const PET_ID = new URLSearchParams(window.location.search).get('id');
+
   async function fetchPet() {
+    if (!PET_ID) {
+      document.getElementById('app').innerHTML = `
+        <div class="no-data">
+          <div style="font-size:4rem;margin-bottom:1rem">🔗</div>
+          <h2>Tag Link Not Valid</h2>
+          <p>This link has no pet ID. Please scan the QR code or tap the NFC tag on the belt again.</p>
+        </div>`;
+      return;
+    }
+
     try {
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/${TABLE}?order=created_at.desc&limit=1`,
+        `${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(PET_ID)}`,
         { headers: HEADERS }
       );
 
@@ -143,8 +156,8 @@
         document.getElementById('app').innerHTML = `
           <div class="no-data">
             <div style="font-size:4rem;margin-bottom:1rem">🐾</div>
-            <h2>No Pet Profile Found</h2>
-            <p>Please go to <a href="admin.html">Admin Panel</a> and fill in the pet details first.</p>
+            <h2>Pet Not Found</h2>
+            <p>This pet tag is not registered yet. The owner needs to activate it from the owner dashboard.</p>
           </div>`;
         return;
       }
@@ -282,8 +295,8 @@
       }
     });
 
-    // Scan counter (local per-device)
-    const key   = 'scan_' + (petName).toLowerCase().replace(/\s/g,'_');
+    // Scan counter (local per-device, per-pet)
+    const key   = 'scan_' + PET_ID;
     let count   = parseInt(localStorage.getItem(key) || '0') + 1;
     localStorage.setItem(key, count);
     document.getElementById('scan-num').textContent = '#' + count;
