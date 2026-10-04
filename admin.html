@@ -21,6 +21,7 @@
       --red:      #f87171;
     }
     body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--charcoal); min-height: 100vh; }
+    *:focus-visible { outline: 2.5px solid var(--coral); outline-offset: 2px; }
 
     /* LOGIN / REGISTER */
     #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#FF6B6B,#FF9A8B,#FFE66D); padding:1rem; }
@@ -143,6 +144,22 @@
     .db-status.connected { background:#f0fff4; color:#166534; }
     .db-status.error { background:#FEE2E2; color:#dc2626; }
 
+    /* MODALS & ANALYTICS */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(44,62,80,0.6); display:none; align-items:center; justify-content:center; z-index:500; padding:1rem; backdrop-filter:blur(3px); }
+    .modal-backdrop.open { display:flex; }
+    .modal-card { background:#fff; border-radius:24px; padding:1.8rem; text-align:center; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+    .modal-card h3 { font-family:'Nunito',sans-serif; font-size:1.3rem; font-weight:900; margin-bottom:0.4rem; color:var(--charcoal); }
+
+    .analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-top:1rem; }
+    .analytics-stat { background:#FAFAFA; border:1.5px solid var(--border); border-radius:14px; padding:0.9rem; text-align:center; }
+    .analytics-stat .num { font-family:'Nunito',sans-serif; font-size:1.6rem; font-weight:900; color:var(--coral); }
+    .analytics-stat .lbl { font-size:0.72rem; color:#888; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:0.2rem; }
+
+    .badge-lost { background:#FEE2E2; color:#dc2626; border:1.5px solid #f87171; font-size:0.72rem; font-weight:900; padding:0.25rem 0.6rem; border-radius:50px; display:inline-flex; align-items:center; gap:0.3rem; width:fit-content; }
+    .mini-btn.lost { background:var(--red); color:#fff; }
+    .mini-btn.found { background:#F0FFF4; color:#166534; border:1.5px solid var(--green); }
+    .mini-btn.stats { background:#F3F0FF; color:var(--purple); }
+
     /* QR MODAL */
     #qr-modal { position:fixed; inset:0; background:rgba(44,62,80,0.6); display:none; align-items:center; justify-content:center; z-index:500; padding:1rem; }
     #qr-modal.open { display:flex; }
@@ -257,7 +274,11 @@
       <div class="section-card">
         <div class="section-title"><span>🐶</span> My Pets</div>
         <div class="pets-grid" id="pets-grid"></div>
-        <div class="empty-pets" id="empty-pets" style="display:none">No pets yet — add your first pet below! 🐾</div>
+        <div class="empty-pets" id="empty-pets" style="display:none">
+          <div style="font-size:2.8rem;margin-bottom:0.5rem">🐾</div>
+          <div style="font-size:1.1rem;font-weight:900;color:var(--charcoal);margin-bottom:0.3rem">No Pets Registered Yet</div>
+          <div style="font-size:0.85rem;color:#888;font-weight:600;max-width:320px;margin:0 auto">Click <b>"＋ Add New Pet"</b> below to register your first pet and generate their unique NFC & QR belt profile link!</div>
+        </div>
       </div>
       <button class="add-pet-btn" onclick="openEditor(null)">＋ Add New Pet</button>
     </div>
@@ -360,6 +381,45 @@
         <button class="add-vax-btn" onclick="addVax()">+ Add Vaccine</button>
       </div>
 
+      <!-- Medical Information (Optional) -->
+      <div class="section-card">
+        <div class="section-title"><span>🏥</span> Medical Information <span style="font-size:0.7rem;color:#999;font-weight:400">(Optional)</span></div>
+        <div class="field-row">
+          <div class="field">
+            <label>Blood Group</label>
+            <input type="text" id="medBloodGroup" placeholder="e.g. DEA 1.1 Positive"/>
+          </div>
+          <div class="field">
+            <label>Allergies</label>
+            <input type="text" id="medAllergies" placeholder="e.g. Chicken, Pollen"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Medical Conditions</label>
+            <input type="text" id="medConditions" placeholder="e.g. Epilepsy, Arthritis"/>
+          </div>
+          <div class="field">
+            <label>Current Medication</label>
+            <input type="text" id="medMedication" placeholder="e.g. Phenobarbital 30mg daily"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Special Medical Instructions</label>
+          <textarea id="medInstructions" placeholder="Any special medical care, diet or handling instructions..."></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Vet Name</label>
+            <input type="text" id="vetName" placeholder="e.g. Dr. Sharma"/>
+          </div>
+          <div class="field">
+            <label>Vet Phone</label>
+            <input type="tel" id="vetPhone" placeholder="e.g. 9876543210"/>
+          </div>
+        </div>
+      </div>
+
       <!-- Emergency Message -->
       <div class="section-card">
         <div class="section-title"><span>🚨</span> Emergency Message</div>
@@ -381,12 +441,78 @@
 <div class="toast" id="toast"></div>
 
 <!-- QR MODAL -->
-<div id="qr-modal" onclick="if(event.target===this) closeQr()">
+<div id="qr-modal" class="modal-backdrop" onclick="if(event.target===this) closeQr()">
   <div class="qr-card">
     <h3>📲 Pet QR Code</h3>
     <img id="qr-img" alt="QR code"/>
     <div class="qr-url" id="qr-url"></div>
     <button class="qr-close" onclick="closeQr()">Close</button>
+  </div>
+</div>
+
+<!-- LOST MODE MODAL -->
+<div id="lost-modal" class="modal-backdrop" onclick="if(event.target===this) closeLostModal()">
+  <div class="modal-card">
+    <h3>🚨 Activate Lost Mode</h3>
+    <p style="font-size:0.85rem;color:#666;margin-bottom:1rem">Activate an urgent Lost Pet alert on your pet's public safety profile tag.</p>
+    <div class="field" style="text-align:left">
+      <label>Last Seen Location</label>
+      <input type="text" id="lostLoc" placeholder="e.g. Sector 18 Central Park, Noida"/>
+    </div>
+    <div class="field-row" style="text-align:left">
+      <div class="field">
+        <label>Last Seen Date</label>
+        <input type="date" id="lostDate"/>
+      </div>
+      <div class="field">
+        <label>Last Seen Time</label>
+        <input type="time" id="lostTime"/>
+      </div>
+    </div>
+    <div class="field" style="text-align:left">
+      <label>Additional Message</label>
+      <textarea id="lostMsg" placeholder="e.g. Wearing a blue collar, responds to Bruno. Very friendly!"></textarea>
+    </div>
+    <div style="display:flex;gap:0.6rem;margin-top:1.2rem">
+      <button class="save-btn" style="background:var(--red);box-shadow:0 4px 15px rgba(248,113,113,0.4)" onclick="confirmActivateLost()">🚨 Activate Lost Alert</button>
+      <button class="qr-close" onclick="closeLostModal()" style="background:#eee;color:#555">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS MODAL -->
+<div id="analytics-modal" class="modal-backdrop" onclick="if(event.target===this) closeAnalyticsModal()">
+  <div class="modal-card">
+    <h3>📊 Pet Safety Analytics</h3>
+    <p style="font-size:0.85rem;color:#888;margin-bottom:1rem" id="analytics-pet-name">Profile Insights</p>
+    
+    <div class="analytics-grid">
+      <div class="analytics-stat">
+        <div class="num" id="stat-total-scans">0</div>
+        <div class="lbl">Total Scans</div>
+      </div>
+      <div class="analytics-stat">
+        <div class="num" id="stat-today-scans">0</div>
+        <div class="lbl">Today's Scans</div>
+      </div>
+      <div class="analytics-stat">
+        <div class="num" id="stat-call-clicks">0</div>
+        <div class="lbl">Call Clicks</div>
+      </div>
+      <div class="analytics-stat">
+        <div class="num" id="stat-wa-clicks">0</div>
+        <div class="lbl">WhatsApp Clicks</div>
+      </div>
+      <div class="analytics-stat">
+        <div class="num" id="stat-lost-alerts">0</div>
+        <div class="lbl">Lost Alerts</div>
+      </div>
+      <div class="analytics-stat">
+        <div class="num" id="stat-loc-shares">0</div>
+        <div class="lbl">Location Shares</div>
+      </div>
+    </div>
+    <button class="qr-close" style="margin-top:1.4rem;width:100%" onclick="closeAnalyticsModal()">Close</button>
   </div>
 </div>
 
@@ -584,16 +710,20 @@
 
   // Restore session on page load + handle auth lifecycle events
   (async () => {
-    const urlMode        = new URLSearchParams(location.search).get('mode');
+    const urlMode         = new URLSearchParams(location.search).get('mode');
     const hashHasRecovery = /type=recovery|access_token=/.test(location.hash);
-    const { data } = await sb.auth.getSession();
 
-    if (urlMode === 'reset' || hashHasRecovery) {
-      // Arrived from a password-reset email link
-      switchTab('reset');
-    } else if (data && data.session) {
-      enterDashboard(data.session.user);
-    } else {
+    try {
+      const { data, error } = await sb.auth.getSession();
+      if (error || !data || !data.session) {
+        if (urlMode === 'reset' || hashHasRecovery) switchTab('reset');
+        else switchTab('login');
+      } else {
+        if (urlMode === 'reset' || hashHasRecovery) switchTab('reset');
+        else enterDashboard(data.session.user);
+      }
+    } catch (err) {
+      console.warn('Auth session check error:', err);
       switchTab('login');
     }
 
@@ -614,9 +744,27 @@
   })();
 
   // ══════════════════════════════════════
+  // HELPER: EXPIRED SESSION / AUTH ERROR CHECK
+  // ══════════════════════════════════════
+  function isAuthError(err) {
+    if (!err) return false;
+    const msg = (err.message || String(err)).toLowerCase();
+    const code = String(err.status || err.code || '');
+    return code === '401' || /jwt expired|invalid jwt|jwt claims|session expired|invalid refresh token|unauthorized/i.test(msg);
+  }
+
+  // ══════════════════════════════════════
   // DASHBOARD
   // ══════════════════════════════════════
   async function enterDashboard(user) {
+    if (user && !user.email_confirmed_at && user.app_metadata && user.app_metadata.provider === 'email') {
+      document.getElementById('verify-email').textContent = user.email || '';
+      document.getElementById('admin-panel').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      switchTab('verify');
+      return;
+    }
+
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-panel').style.display  = 'block';
@@ -629,8 +777,11 @@
     // Connection check
     const { error } = await sb.from(TABLE).select('id').limit(1);
     const st = document.getElementById('db-status');
-    if (error) { st.textContent = '● DB Error'; st.className = 'db-status error'; }
-    else       { st.textContent = '● Connected'; st.className = 'db-status connected'; }
+    if (error) {
+      if (isAuthError(error)) { showToast('Session expired. Please log in again.', true); doLogout(); return; }
+      st.textContent = '● DB Error'; st.className = 'db-status error';
+    }
+    else { st.textContent = '● Connected'; st.className = 'db-status connected'; }
 
     loadMyPets();
   }
@@ -642,7 +793,11 @@
       .eq('owner_id', currentUser.id)
       .order('created_at', { ascending: false });
 
-    if (error) { showToast('Could not load pets: ' + error.message, true); return; }
+    if (error) {
+      if (isAuthError(error)) { showToast('Session expired. Please log in again.', true); doLogout(); return; }
+      showToast('Could not load pets: ' + error.message, true);
+      return;
+    }
 
     myPets = data || [];
     renderPets();
@@ -662,8 +817,16 @@
       const thumb = p.image_url
         ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.outerHTML='<div class=\\'ph\\'>🐾</div>'"/>`
         : `<div class="ph">🐾</div>`;
+      
+      const isLost = p.status === 'lost';
+      const lostBadge = isLost ? `<div class="badge-lost">🚨 LOST PET ALERT</div>` : '';
+      const lostBtn = isLost
+        ? `<button class="mini-btn found" onclick='markFound(${JSON.stringify(p.id)})'>✅ Mark Found</button>`
+        : `<button class="mini-btn lost" onclick='openLostModal(${JSON.stringify(p.id)})'>🚨 Lost Mode</button>`;
+
       card.innerHTML = `
         ${thumb}
+        ${lostBadge}
         <h4>${p.name || 'Pet'}</h4>
         <div class="meta">${[p.breed, p.age].filter(Boolean).join(' · ') || 'No breed set'}</div>
         <div class="meta">📍 ${p.locality || '—'}</div>
@@ -672,6 +835,8 @@
           <button class="mini-btn view" onclick='previewById(${JSON.stringify(p.id)})'>👁 Preview</button>
           <button class="mini-btn link" onclick='copyById(${JSON.stringify(p.id)})'>🔗 Link</button>
           <button class="mini-btn qr"  onclick='qrById(${JSON.stringify(p.id)})'>📲 QR</button>
+          <button class="mini-btn stats" onclick='showAnalytics(${JSON.stringify(p.id)})'>📊 Stats</button>
+          ${lostBtn}
         </div>`;
       grid.appendChild(card);
     });
@@ -729,6 +894,16 @@
     document.getElementById('pincode').value        = p.pincode     || '';
     document.getElementById('emergencyMsg').value   = p.emergency_msg || '';
 
+    // Medical info fields
+    const med = p.medical_info || {};
+    document.getElementById('medBloodGroup').value   = med.blood_group || '';
+    document.getElementById('medAllergies').value    = med.allergies   || '';
+    document.getElementById('medConditions').value   = med.medical_conditions || '';
+    document.getElementById('medMedication').value   = med.current_medication || '';
+    document.getElementById('medInstructions').value = med.special_instructions || '';
+    document.getElementById('vetName').value         = med.vet_name    || '';
+    document.getElementById('vetPhone').value        = med.vet_phone   || '';
+
     // image preview
     const preview = document.getElementById('img-preview');
     const label   = document.getElementById('upload-btn-label');
@@ -781,6 +956,7 @@
     } catch (err) {
       label.className   = 'img-upload-btn';
       label.textContent = '❌ Upload failed — tap to retry';
+      if (isAuthError(err)) { showToast('Session expired. Please log in again.', true); doLogout(); return; }
       showToast('Upload failed: ' + err.message, true);
       console.error(err);
     }
@@ -839,6 +1015,7 @@
     btn.textContent = '⏳ Saving to Supabase...';
 
     const breed = document.getElementById('petBreed').value.trim();
+    const existingPet = currentPetId ? myPets.find(p => String(p.id) === String(currentPetId)) : null;
 
     const payload = {
       owner_id:      currentUser.id,
@@ -856,7 +1033,17 @@
       emergency_msg: document.getElementById('emergencyMsg').value.trim(),
       tags:          tags,
       vaccines:      vaccines.filter(v => (v.name || '').trim() !== ''),
-      status:        'active',
+      status:        existingPet ? existingPet.status || 'active' : 'active',
+      lost_details:  existingPet ? existingPet.lost_details || {} : {},
+      medical_info:  {
+        blood_group:          document.getElementById('medBloodGroup').value.trim(),
+        allergies:            document.getElementById('medAllergies').value.trim(),
+        medical_conditions:   document.getElementById('medConditions').value.trim(),
+        current_medication:   document.getElementById('medMedication').value.trim(),
+        special_instructions: document.getElementById('medInstructions').value.trim(),
+        vet_name:             document.getElementById('vetName').value.trim(),
+        vet_phone:            document.getElementById('vetPhone').value.trim(),
+      }
     };
 
     try {
@@ -887,6 +1074,7 @@
       console.error('Save error:', err);
       btn.textContent = '❌ Save Failed — Try Again';
       btn.disabled    = false;
+      if (isAuthError(err)) { showToast('Session expired. Please log in again.', true); doLogout(); return; }
       showToast('Save failed: ' + err.message, true);
     }
   }
@@ -899,9 +1087,144 @@
     if (!confirm('Delete this pet profile permanently? This cannot be undone.')) return;
 
     const { error } = await sb.from(TABLE).delete().eq('id', currentPetId);
-    if (error) { showToast('Delete failed: ' + error.message, true); return; }
+    if (error) {
+      if (isAuthError(error)) { showToast('Session expired. Please log in again.', true); doLogout(); return; }
+      showToast('Delete failed: ' + error.message, true);
+      return;
+    }
     showToast('🗑 Pet profile deleted.');
     backToPets();
+  }
+
+  // ══════════════════════════════════════
+  // LOST MODE HANDLERS
+  // ══════════════════════════════════════
+  let targetLostPetId = null;
+
+  function openLostModal(id) {
+    targetLostPetId = id;
+    const pet = myPets.find(p => String(p.id) === String(id));
+    const details = pet ? (pet.lost_details || {}) : {};
+
+    document.getElementById('lostLoc').value  = details.last_seen_location || (pet ? pet.locality || '' : '');
+    document.getElementById('lostDate').value = details.last_seen_date || new Date().toISOString().slice(0,10);
+    document.getElementById('lostTime').value = details.last_seen_time || new Date().toTimeString().slice(0,5);
+    document.getElementById('lostMsg').value  = details.message || '';
+    document.getElementById('lost-modal').classList.add('open');
+  }
+
+  function closeLostModal() {
+    targetLostPetId = null;
+    document.getElementById('lost-modal').classList.remove('open');
+  }
+
+  async function confirmActivateLost() {
+    if (!targetLostPetId) return;
+    const pet = myPets.find(p => String(p.id) === String(targetLostPetId));
+    if (!pet) return;
+
+    const lostDetails = {
+      last_seen_location: document.getElementById('lostLoc').value.trim(),
+      last_seen_date:     document.getElementById('lostDate').value,
+      last_seen_time:     document.getElementById('lostTime').value,
+      message:            document.getElementById('lostMsg').value.trim(),
+    };
+
+    try {
+      const { error } = await sb
+        .from(TABLE)
+        .update({ status: 'lost', lost_details: lostDetails })
+        .eq('id', targetLostPetId);
+
+      if (error) throw error;
+
+      try {
+        await sb.from('pet_events').insert({ pet_id: targetLostPetId, event_type: 'lost_alert' });
+      } catch (e) { console.warn('Lost event log note:', e); }
+
+      closeLostModal();
+      showToast('🚨 Lost Mode Activated for ' + (pet.name || 'Pet') + '!');
+      loadMyPets();
+    } catch (err) {
+      showToast('Failed to activate Lost Mode: ' + err.message, true);
+    }
+  }
+
+  async function markFound(id) {
+    const pet = myPets.find(p => String(p.id) === String(id));
+    if (!pet) return;
+    if (!confirm('Mark ' + (pet.name || 'Pet') + ' as found? This will restore standard profile tag status.')) return;
+
+    try {
+      const { error } = await sb
+        .from(TABLE)
+        .update({ status: 'active' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      showToast('🎉 Great news! ' + (pet.name || 'Pet') + ' is marked found!');
+      loadMyPets();
+    } catch (err) {
+      showToast('Could not mark pet found: ' + err.message, true);
+    }
+  }
+
+  // ══════════════════════════════════════
+  // ANALYTICS STATS HANDLERS
+  // ══════════════════════════════════════
+  async function showAnalytics(petId) {
+    const pet = myPets.find(p => String(p.id) === String(petId));
+    if (!pet) return;
+
+    document.getElementById('analytics-pet-name').textContent = (pet.name || 'Pet') + ' — Safety Insights';
+    document.getElementById('stat-total-scans').textContent  = '...';
+    document.getElementById('stat-today-scans').textContent  = '...';
+    document.getElementById('stat-call-clicks').textContent  = '...';
+    document.getElementById('stat-wa-clicks').textContent    = '...';
+    document.getElementById('stat-lost-alerts').textContent  = '...';
+    document.getElementById('stat-loc-shares').textContent   = '...';
+
+    document.getElementById('analytics-modal').classList.add('open');
+
+    try {
+      const { data, error } = await sb
+        .from('pet_events')
+        .select('event_type, created_at')
+        .eq('pet_id', petId);
+
+      if (error) throw error;
+
+      const events = data || [];
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      const totalScans = events.filter(e => e.event_type === 'scan').length;
+      const todayScans = events.filter(e => e.event_type === 'scan' && e.created_at && e.created_at.slice(0, 10) === todayStr).length;
+      const callClicks = events.filter(e => e.event_type === 'call').length;
+      const waClicks   = events.filter(e => e.event_type === 'whatsapp').length;
+      const lostAlerts = events.filter(e => e.event_type === 'lost_alert').length;
+      const locShares  = events.filter(e => e.event_type === 'location_shared').length;
+
+      document.getElementById('stat-total-scans').textContent = totalScans;
+      document.getElementById('stat-today-scans').textContent = todayScans;
+      document.getElementById('stat-call-clicks').textContent = callClicks;
+      document.getElementById('stat-wa-clicks').textContent   = waClicks;
+      document.getElementById('stat-lost-alerts').textContent = lostAlerts;
+      document.getElementById('stat-loc-shares').textContent  = locShares;
+
+    } catch (err) {
+      console.warn('Analytics query fallback:', err);
+      document.getElementById('stat-total-scans').textContent = '0';
+      document.getElementById('stat-today-scans').textContent = '0';
+      document.getElementById('stat-call-clicks').textContent = '0';
+      document.getElementById('stat-wa-clicks').textContent   = '0';
+      document.getElementById('stat-lost-alerts').textContent = '0';
+      document.getElementById('stat-loc-shares').textContent  = '0';
+    }
+  }
+
+  function closeAnalyticsModal() {
+    document.getElementById('analytics-modal').classList.remove('open');
   }
 
   // per-pet link helpers (editor)
