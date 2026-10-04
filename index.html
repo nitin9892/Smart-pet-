@@ -162,7 +162,20 @@
         return;
       }
 
-      buildPage(rows[0]);
+      const pet = rows[0];
+
+      // Deactivated / inactive pet — show a friendly inactive message
+      if (pet.status && pet.status !== 'active') {
+        document.getElementById('app').innerHTML = `
+          <div class="no-data">
+            <div style="font-size:4rem;margin-bottom:1rem">💤</div>
+            <h2>This Tag Is Inactive</h2>
+            <p>This pet profile has been deactivated by its owner and is not currently available.</p>
+          </div>`;
+        return;
+      }
+
+      buildPage(pet);
 
     } catch (err) {
       console.error(err);
