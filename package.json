@@ -1,0 +1,17 @@
+{
+  "name": "smart-pet-safety-belt",
+  "version": "1.0.0",
+  "description": "Smart Pet Safety Belt — IoT NFC & QR Tag Safety Platform",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 8080 --host",
+    "start": "vite --port 8080 --host",
+    "serve": "vite --port 8080 --host",
+    "build": "vite build",
+    "preview": "vite preview --port 8080"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
+  }
+}
