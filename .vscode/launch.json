@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome (Public Profile)",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome (Owner Dashboard)",
+            "url": "http://localhost:8080/admin.html",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
