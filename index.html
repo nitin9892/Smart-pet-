@@ -131,6 +131,24 @@
     .nfc-badge{display:inline-flex;align-items:center;gap:0.4rem;background:var(--charcoal);color:#fff;font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:700;padding:0.3rem 1rem;border-radius:50px;margin-top:0.5rem}
     footer strong{color:var(--coral)}
 
+    /* LANDING PAGE STYLES */
+    .landing-nav { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.8rem; max-width:1100px; margin:0 auto; flex-wrap:wrap; gap:0.8rem; }
+    .brand-logo { font-size:1.6rem; }
+    .brand-title { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.25rem; color:var(--charcoal); }
+    .nav-links { display:flex; align-items:center; gap:0.6rem; margin-left:auto; }
+    .nav-btn { text-decoration:none; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; padding:0.5rem 1rem; border-radius:50px; transition:all 0.2s; }
+    .nav-btn.primary { background:var(--coral); color:#fff; box-shadow:0 4px 14px rgba(255,107,107,0.35); }
+    .nav-btn.support { background:#E6FFFA; color:#0d9488; border:1px solid #99f6e4; }
+
+    .landing-hero { background:linear-gradient(135deg,#FF6B6B 0%,#FF9A8B 45%,#FFE66D 100%); padding:3.5rem 1.5rem 5.5rem; text-align:center; position:relative; overflow:hidden; }
+    .hero-badge { display:inline-block; background:rgba(255,255,255,0.25); backdrop-filter:blur(4px); border:1.5px solid rgba(255,255,255,0.5); color:#fff; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.75rem; padding:0.3rem 0.9rem; border-radius:50px; margin-bottom:1rem; letter-spacing:1px; }
+    .hero-title { font-family:'Nunito',sans-serif; font-size:clamp(2.2rem,6vw,3.5rem); font-weight:900; color:#fff; text-shadow:2px 3px 0 rgba(0,0,0,0.1); line-height:1.15; margin-bottom:0.8rem; max-width:800px; margin-left:auto; margin-right:auto; }
+    .hero-subtitle { font-size:1.05rem; color:rgba(255,255,255,0.95); max-width:620px; margin:0 auto 1.8rem; line-height:1.5; font-weight:500; }
+    .hero-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:0.8rem; }
+    .cta-btn { display:inline-flex; align-items:center; gap:0.5rem; text-decoration:none; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; padding:0.8rem 1.6rem; border-radius:50px; transition:all 0.2s; }
+    .cta-btn.primary { background:var(--charcoal); color:#fff; box-shadow:0 6px 20px rgba(44,62,80,0.3); }
+    .cta-btn.secondary { background:#fff; color:var(--coral); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+
     .no-data{text-align:center;padding:4rem 2rem;font-family:'Nunito',sans-serif}
     .no-data h2{font-size:1.5rem;font-weight:900;margin-bottom:0.5rem}
     .no-data p{color:#999;font-size:0.95rem}
@@ -143,7 +161,7 @@
 <div id="app">
   <div class="loading-screen">
     <div class="loader"></div>
-    <div class="loading-text">🐾 Loading pet profile...</div>
+    <div class="loading-text">🐾 Loading...</div>
   </div>
 </div>
 
@@ -202,17 +220,13 @@
   // ══════════════════════════════════════
   // FETCH THIS SPECIFIC PET BY UNIQUE ID
   // (index.html?id=<PET_ID> — NFC/QR link)
+  // OR RENDER LANDING PAGE IF NO ID GIVEN
   // ══════════════════════════════════════
   const PET_ID = new URLSearchParams(window.location.search).get('id');
 
   async function fetchPet() {
     if (!PET_ID) {
-      document.getElementById('app').innerHTML = `
-        <div class="no-data">
-          <div style="font-size:4rem;margin-bottom:1rem">🔗</div>
-          <h2>Tag Link Not Valid</h2>
-          <p>This link has no pet ID. Please scan the QR code or tap the NFC tag on the belt again.</p>
-        </div>`;
+      buildLandingPage();
       return;
     }
 
@@ -230,8 +244,9 @@
         document.getElementById('app').innerHTML = `
           <div class="no-data">
             <div style="font-size:4rem;margin-bottom:1rem">🐾</div>
-            <h2>Pet Not Found</h2>
-            <p>This pet tag is not registered yet. The owner needs to activate it from the owner dashboard.</p>
+            <h2>Pet Tag Not Found</h2>
+            <p>This pet tag link is invalid or not registered yet. The owner can activate it from the dashboard.</p>
+            <p style="margin-top:1.2rem"><a href="admin.html" class="call-btn" style="display:inline-block">Go to Owner Dashboard</a></p>
           </div>`;
         return;
       }
@@ -261,8 +276,163 @@
           <div style="font-size:4rem;margin-bottom:1rem">⚠️</div>
           <h2>Could not load profile</h2>
           <p>${err.message}</p>
-          <p style="margin-top:0.5rem"><a href="admin.html">Go to Admin Panel</a></p>
+          <p style="margin-top:0.5rem"><a href="admin.html">Go to Owner Dashboard</a></p>
         </div>`;
+    }
+  }
+
+  // ══════════════════════════════════════
+  // BUILD LANDING PAGE (ROOT URL /)
+  // ══════════════════════════════════════
+  function buildLandingPage() {
+    document.title = "Smart Pet Safety Belt 🐾 — IoT NFC & QR Pet Safety Platform";
+    document.getElementById('app').innerHTML = `
+      <header class="landing-nav">
+        <div class="brand-logo" style="display:flex;align-items:center;gap:0.5rem">
+          <span>🐾</span>
+          <span class="brand-title">Smart Pet Safety Belt</span>
+        </div>
+        <div class="nav-links">
+          <a href="admin.html" class="nav-btn primary">🔑 Owner Dashboard</a>
+          <a href="https://wa.me/919892614549?text=Hi!%20I%20need%20support%20with%20Smart%20Pet%20Safety%20Belt." target="_blank" class="nav-btn support">💬 Support</a>
+        </div>
+      </header>
+
+      <section class="landing-hero" id="hero">
+        <div class="hero-badge">⚡ IoT-POWERED NFC & QR PET SAFETY TAG</div>
+        <h1 class="hero-title">Protect Your Furry Family Member 🐶❤️</h1>
+        <p class="hero-subtitle">Smart safety belt tags that help lost pets get reunited with their owners instantly — no app required.</p>
+        
+        <div class="hero-actions">
+          <a href="admin.html" class="cta-btn primary">🚀 Open Owner Dashboard</a>
+          <a href="https://wa.me/919892614549?text=Hi!%20I%20have%20a%20question%20about%20Smart%20Pet%20Safety%20Belt." target="_blank" class="cta-btn secondary">💬 Contact Support (+91 9892614549)</a>
+        </div>
+      </section>
+
+      <svg class="wave" viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,35 C360,75 1080,-5 1440,35 L1440,0 L0,0 Z" fill="#FF9A8B"/>
+        <path d="M0,45 C420,85 1020,-5 1440,45 L1440,0 L0,0 Z" fill="#FFE66D" opacity="0.35"/>
+      </svg>
+
+      <div class="cards" style="margin-top:-2rem">
+        <div class="card" style="grid-column:1/-1;text-align:center;background:#fff">
+          <span class="card-icon">⚡</span>
+          <div class="card-label">Fast & Easy Process</div>
+          <div class="card-title" style="font-size:1.5rem">How Smart Pet Safety Belt Works</div>
+          <p class="card-sub" style="margin-bottom:1.2rem">Simple 4-step IoT identification process for complete peace of mind.</p>
+
+          <div class="flow-grid">
+            <div class="flow-step">
+              <div class="flow-num">Step 1</div>
+              <div class="flow-icon">⚡</div>
+              <div class="flow-lbl">Attach IoT Tag</div>
+              <p style="font-size:0.7rem;color:#888;margin-top:0.2rem">Attach tag to pet belt/collar</p>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">Step 2</div>
+              <div class="flow-icon">📱</div>
+              <div class="flow-lbl">Tap or Scan</div>
+              <p style="font-size:0.7rem;color:#888;margin-top:0.2rem">Finder taps NFC or scans QR</p>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">Step 3</div>
+              <div class="flow-icon">🐶</div>
+              <div class="flow-lbl">View Pet Info</div>
+              <p style="font-size:0.7rem;color:#888;margin-top:0.2rem">Instant profile & medical care</p>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">Step 4</div>
+              <div class="flow-icon">📞</div>
+              <div class="flow-lbl">Reunite Quickly</div>
+              <p style="font-size:0.7rem;color:#888;margin-top:0.2rem">1-Tap Call & GPS Sharing</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card contact">
+          <span class="card-icon">⚡</span>
+          <div class="card-label">Dual NFC & QR Tech</div>
+          <div class="card-title">Instant Phone Tap</div>
+          <div class="card-sub">Works on any smartphone without downloading any app. Tap with NFC or scan with camera.</div>
+        </div>
+
+        <div class="card emergency">
+          <span class="card-icon">🚨</span>
+          <div class="card-label">Emergency Safety</div>
+          <div class="card-title">Lost Mode Alerts</div>
+          <div class="card-sub">Activate Lost Mode from your dashboard to show an urgent missing banner to anyone who scans your pet's tag.</div>
+        </div>
+
+        <div class="card medical">
+          <span class="card-icon">🏥</span>
+          <div class="card-label">Health & Care</div>
+          <div class="card-title">Medical Info & Records</div>
+          <div class="card-sub">Store blood group, allergies, medications, vaccination history & vet contacts securely on your pet's profile.</div>
+        </div>
+
+        <div class="card location">
+          <span class="card-icon">📍</span>
+          <div class="card-label">GPS Assistance</div>
+          <div class="card-title">Location Sharing</div>
+          <div class="card-sub">Finders can share their exact GPS location with you directly via WhatsApp with a single button tap.</div>
+        </div>
+      </div>
+
+      <div class="sos-section">
+        <a href="admin.html" class="sos-btn" style="text-decoration:none">
+          <span class="sos-icon">🔑</span>
+          <div class="sos-text-wrap">
+            <span class="sos-title">Access Owner Dashboard</span>
+            <span class="sos-sub">Register your pet & generate NFC/QR tag profile links</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-title"><span>🛡️</span> Project Overview & Features</div>
+          <p class="info-sub">Smart Pet Safety Belt combines smart hardware tags with cloud security to make pet recovery faster and safer.</p>
+
+          <div class="highlights-wrap">
+            <span class="hl-chip">⚡ NFC Chip Support</span>
+            <span class="hl-chip">📲 High-Res QR Code</span>
+            <span class="hl-chip">🚀 No Mobile App Needed</span>
+            <span class="hl-chip">🚨 Emergency Lost Mode</span>
+            <span class="hl-chip">📍 WhatsApp Location Sharing</span>
+            <span class="hl-chip">📊 Scan & Click Analytics</span>
+            <span class="hl-chip">🏥 Medical Info Storage</span>
+            <span class="hl-chip">🔒 Password Auth & RLS</span>
+          </div>
+
+          <div class="support-card">
+            <div class="support-title">💬 Need Technical Support or Have Questions?</div>
+            <div class="support-sub">Smart Pet Safety Belt Support Line</div>
+            <a href="https://wa.me/919892614549?text=Hi!%20I%20need%20support%20with%20Smart%20Pet%20Safety%20Belt."
+               target="_blank" class="support-wa-btn">💬 Contact Support on WhatsApp (+91 9892614549)</a>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div>Powered by <strong>Smart Pet Safety Belt</strong> 🐾</div>
+        <div class="nfc-badge">⚡ NFC + QR IoT Tag Platform</div>
+      </footer>
+    `;
+
+    // Floating paws animation
+    const hero = document.getElementById('hero');
+    if (hero) {
+      ['🐾','🐕','🦴','❤️','🐾'].forEach(emoji => {
+        for (let j = 0; j < 2; j++) {
+          const p = document.createElement('span');
+          p.className = 'paw';
+          p.textContent = emoji;
+          p.style.left = Math.random() * 100 + '%';
+          p.style.animationDuration = (8 + Math.random() * 10) + 's';
+          p.style.animationDelay    = (Math.random() * 8) + 's';
+          hero.appendChild(p);
+        }
+      });
     }
   }
 
