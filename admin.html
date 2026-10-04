@@ -442,11 +442,25 @@
 
 <!-- QR MODAL -->
 <div id="qr-modal" class="modal-backdrop" onclick="if(event.target===this) closeQr()">
-  <div class="qr-card">
-    <h3>📲 Pet QR Code</h3>
-    <img id="qr-img" alt="QR code"/>
-    <div class="qr-url" id="qr-url"></div>
-    <button class="qr-close" onclick="closeQr()">Close</button>
+  <div class="qr-card" style="max-width:440px;padding:1.8rem">
+    <div style="font-size:2.5rem;margin-bottom:0.3rem">📲</div>
+    <h3 id="qr-modal-pet-name">Pet QR Code</h3>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:1rem">Scan with any smartphone camera to view public safety profile</p>
+    
+    <div style="background:#FAF9F6;padding:1rem;border-radius:16px;display:inline-block;border:2px dashed var(--border);margin-bottom:1rem">
+      <img id="qr-img" alt="QR code" style="width:200px;height:200px;display:block;margin:0 auto;border-radius:8px"/>
+    </div>
+    
+    <div style="font-size:0.75rem;font-weight:700;color:#666;margin-bottom:0.3rem">Public Pet Profile Link</div>
+    <div class="qr-url" id="qr-url" style="background:#F1F3F7;padding:0.6rem 0.8rem;border-radius:10px;font-size:0.78rem;color:var(--charcoal);word-break:break-all;font-family:monospace;margin-bottom:1.2rem;border:1px solid var(--border)"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.8rem">
+      <button class="mini-btn copy" style="padding:0.7rem;font-size:0.85rem;justify-content:center" onclick="copyCurrentQrUrl()">📋 Copy Link</button>
+      <button class="mini-btn view" style="padding:0.7rem;font-size:0.85rem;justify-content:center" onclick="previewCurrentQrUrl()">👁 View Profile</button>
+    </div>
+
+    <button class="save-btn" style="padding:0.75rem;font-size:0.92rem;margin-bottom:0.6rem" onclick="downloadQrImage()">📥 Download QR Code (.PNG)</button>
+    <button class="qr-close" style="width:100%;background:#eee;color:#555" onclick="closeQr()">Close</button>
   </div>
 </div>
 
@@ -842,23 +856,72 @@
     });
   }
 
-  function petLink(id) { return 'index.html?id=' + id; }
+  const PROD_DOMAIN = 'https://smartpetinfo.in';
 
-  function previewById(id) { window.open(petLink(id), '_blank'); }
+  function getPetPublicUrl(id) {
+    if (!id) return PROD_DOMAIN;
+    return `${PROD_DOMAIN}/?id=${encodeURIComponent(id)}`;
+  }
+
+  function petLink(id) { return getPetPublicUrl(id); }
+
+  function previewById(id) { window.open(getPetPublicUrl(id), '_blank'); }
 
   function copyById(id) {
-    const url = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(id);
-    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copied: ' + url));
+    const url = getPetPublicUrl(id);
+    navigator.clipboard.writeText(url).then(() => showToast('Link Copied!'));
   }
 
   let qrCurrentUrl = '';
+  let qrCurrentPetName = 'Pet';
+
   function qrById(id) {
-    qrCurrentUrl = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(id);
+    const pet = myPets.find(p => String(p.id) === String(id));
+    qrCurrentPetName = pet ? pet.name || 'Pet' : 'Pet';
+    qrCurrentUrl = getPetPublicUrl(id);
+
+    const titleEl = document.getElementById('qr-modal-pet-name');
+    if (titleEl) titleEl.textContent = `${qrCurrentPetName}'s QR Code`;
     document.getElementById('qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=440x440&data=' + encodeURIComponent(qrCurrentUrl);
     document.getElementById('qr-url').textContent = qrCurrentUrl;
     document.getElementById('qr-modal').classList.add('open');
   }
+
   function closeQr() { document.getElementById('qr-modal').classList.remove('open'); }
+
+  function copyCurrentQrUrl() {
+    if (!qrCurrentUrl) return;
+    navigator.clipboard.writeText(qrCurrentUrl).then(() => showToast('Link Copied!'));
+  }
+
+  function previewCurrentQrUrl() {
+    if (!qrCurrentUrl) return;
+    window.open(qrCurrentUrl, '_blank');
+  }
+
+  async function downloadQrImage() {
+    if (!qrCurrentUrl || !qrCurrentPetName) return;
+    const qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=' + encodeURIComponent(qrCurrentUrl);
+    try {
+      showToast('⏳ Generating QR Code PNG...');
+      const response = await fetch(qrApiUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      const safeName = qrCurrentPetName.replace(/[^a-zA-Z0-9_-]/g, '_');
+      link.download = `${safeName}-QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+      showToast('✅ Downloaded ' + safeName + '-QR.png!');
+    } catch (err) {
+      console.error('Download QR error:', err);
+      window.open(qrApiUrl, '_blank');
+      showToast('⚠️ Opening QR image in new tab for download...');
+    }
+  }
 
   // ══════════════════════════════════════
   // EDITOR — open / close
@@ -1228,11 +1291,11 @@
   }
 
   // per-pet link helpers (editor)
-  function previewPet()  { if (currentPetId) window.open(petLink(currentPetId), '_blank'); }
+  function previewPet()  { if (currentPetId) window.open(getPetPublicUrl(currentPetId), '_blank'); }
   function copyPetLink() {
     if (!currentPetId) return;
-    const url = location.origin + location.pathname.replace(/admin\.html.*$/i, '') + petLink(currentPetId);
-    navigator.clipboard.writeText(url).then(() => showToast('📋 Link copied: ' + url));
+    const url = getPetPublicUrl(currentPetId);
+    navigator.clipboard.writeText(url).then(() => showToast('Link Copied!'));
   }
   function showPetQr() {
     if (currentPetId) qrById(currentPetId);
